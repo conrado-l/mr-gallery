@@ -103,7 +103,7 @@ const actions = {
    */
   fetchPhotos ({ commit, dispatch, getters }) {
     return new Promise((resolve, reject) => {
-      // Make the request to AgileEngine's API
+      // Make the request
       APIService.get('images', { page: getters.getCurrentPage })
         .then((res) => {
           // Check if the pictures field is valid

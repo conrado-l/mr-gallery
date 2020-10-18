@@ -78,11 +78,11 @@ const actions = {
    */
   fetchToken ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
-      const url = 'auth'
+      // Set the API key payload
       const payload = { apiKey: '23567b218376f79d9415' }
 
       // Make the request to AgileEngine's API
-      APIService.post(url, payload)
+      APIService.post('auth', payload)
         .then(res => {
           // Check if the token is valid
           if (res?.data?.token && typeof res.data.token === 'string') {

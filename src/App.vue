@@ -44,6 +44,10 @@
       not logged in
     </div>
 
+    <div v-if="errorAuthenticating">
+      An error has occurred while trying to authenticate
+    </div>
+
     <v-main>
       <router-view v-if="getIsUserAuthenticated"></router-view>
       <div v-else>Hello beautiful!</div>
@@ -58,11 +62,8 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'App',
 
-  components: {
-  },
-
   data: () => ({
-    //
+    errorAuthenticating: false
   }),
   computed: {
     ...mapGetters('auth', [
@@ -72,6 +73,9 @@ export default {
   /** Mounted life-cycle hook */
   created () {
     this.$store.dispatch('auth/fetchToken')
+      .catch(() => {
+        this.errorAuthenticating = true
+      })
   }
 }
 </script>
