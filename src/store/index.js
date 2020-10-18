@@ -6,11 +6,13 @@ import Vuex from 'vuex'
 
 // Modules
 import auth from './modules/auth/auth'
+import photos from './modules/photos/photos'
 
 Vue.use(Vuex)
 
 const modules = {
-  auth
+  auth,
+  photos
 }
 
 export default new Vuex.Store({
