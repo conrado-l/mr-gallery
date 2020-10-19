@@ -94,8 +94,8 @@ const mutations = {
    * @param state
    * @param {number} pageNumber
    */
-  [types.SET_CURRENT_PAGE] (state, pageNumber) {
-    state.currentPage = pageNumber
+  [types.SET_CURRENT_PAGE] (state) {
+    state.currentPage += 1
   },
   /**
    * Sets the photos
@@ -103,7 +103,7 @@ const mutations = {
    * @param {array} photos
    */
   [types.SET_PHOTOS] (state, photos) {
-    state.photos = photos
+    state.photos = [...state.photos, ...photos]
   },
   /**
    * Sets the photo details
@@ -150,12 +150,12 @@ const actions = {
             commit(types.SET_PHOTOS, res.data.pictures)
             resolve()
           } else {
-            console.error('An error has occurred while trying to fetch the images', res)
+            console.error('An error has occurred while trying to fetch the photos', res)
             reject(res)
           }
         })
         .catch((err) => {
-          console.error('An error has occurred while trying to fetch the images', err)
+          console.error('An error has occurred while trying to fetch the photos', err)
           reject(err)
         })
     })

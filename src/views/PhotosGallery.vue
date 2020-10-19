@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <!-- Coolbox image library -->
+    <!-- Coolbox photo library -->
     <CoolLightBox
       :items="getFullSizePhotos"
       :index="currentOpenedImageIndex"
@@ -12,58 +12,63 @@
     </CoolLightBox>
     <!---->
 
-    <v-row>
-      <v-col
-        v-for="(photo, photoIndex) in getThumbnailPhotos"
-        :key="photo.id"
-        class="d-flex child-flex"
-        xs="1"
-        md="4"
-      >
-        <!-- Thumbnail images -->
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-img
-              v-ripple
-              :src="photo.src"
-              aspect-ratio="1"
-              v-bind="attrs"
-              v-on="on"
-              class="grey lighten-2 clickable"
-              @click="fetchPhotoDetail(photoIndex, photo.id)"
-            >
-              <template v-slot:placeholder>
-                <v-row
-                  class="fill-height ma-0"
-                  align="center"
-                  justify="center"
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  ></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-          </template>
-          <span>Click for more details</span>
-        </v-tooltip>
-        <!---->
-      </v-col>
-    </v-row>
+    <div v-infinite-scroll="fetchThumnbnailImages" infinite-scroll-distance="10">
+      <v-row>
+
+        <v-col
+          v-for="(photo, photoIndex) in getThumbnailPhotos"
+          :key="photo.id"
+          class="d-flex child-flex"
+          xs="1"
+          md="4"
+          sm="1"
+        >
+          <!-- Thumbnail photos -->
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-img
+                v-ripple
+                :src="photo.src"
+                v-bind="attrs"
+                v-on="on"
+                class="grey lighten-2 clickable"
+                @click="fetchPhotoDetail(photoIndex, photo.id)"
+              >
+                <template v-slot:placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    ></v-progress-circular>
+                  </v-row>
+                </template>
+              </v-img>
+            </template>
+            <span>Click for more details</span>
+          </v-tooltip>
+          <!---->
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
 <script>
-import CoolLightBox from 'vue-cool-lightbox'
 import { mapGetters } from 'vuex'
+import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import infiniteScroll from 'vue-infinite-scroll'
 
-/** It renders a grid of clickable photos, with the possibility to open them in full screen **/
+/** It renders a grid of clickable images, with the possibility to open them in full screen, for more details **/
 export default {
   components: {
     CoolLightBox
   },
+  directives: { infiniteScroll },
   data: function () {
     return {
       currentOpenedImageIndex: null
@@ -76,6 +81,13 @@ export default {
     ])
   },
   methods: {
+    /**
+     * Fetches thumbnail images
+     /**/
+    fetchThumnbnailImages () {
+      this.$store.commit('photos/SET_CURRENT_PAGE')
+      this.$store.dispatch('photos/fetchPhotos')
+    },
     /**
      * Fired when the photo is changed from the detail modal
      * @param {number} photoIndex
@@ -93,7 +105,7 @@ export default {
     fetchPhotoDetail (photoIndex, photoId) {
       // Avoid duplicating requests
       if (this.isPhotoAlreadyLoaded(photoId)) {
-        // Open the modal and show the picture if it's currently closed
+        // Open the modal and show the photo if it's currently closed
         if (!this.currentOpenedImageIndex) {
           this.currentOpenedImageIndex = photoIndex
         }
@@ -103,7 +115,7 @@ export default {
       this.$store.dispatch('photos/fetchPhotoDetail', photoId)
         .then(() => {
           setTimeout(() => {
-            // Ugly workaround to make the library update the image since it does not support it, neither V-viewer or the rest
+            // Ugly workaround to make the library update the photo since it does not support it, neither V-viewer or the rest
             // of the libraries that I tried, supporting zoom, panning and a modal
             document.querySelector('.cool-lightbox__slide.cool-lightbox__slide--current img').src = this.getFullSizePhotos[photoIndex].src
           })
