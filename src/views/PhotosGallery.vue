@@ -12,9 +12,9 @@
     </CoolLightBox>
     <!---->
 
+    <!-- Infinity scroll -->
     <div v-infinite-scroll="fetchThumnbnailImages" infinite-scroll-distance="10">
       <v-row>
-
         <v-col
           v-for="(photo, photoIndex) in getThumbnailPhotos"
           :key="photo.id"
@@ -54,6 +54,7 @@
         </v-col>
       </v-row>
     </div>
+    <!----->
   </v-container>
 </template>
 
@@ -63,7 +64,10 @@ import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import infiniteScroll from 'vue-infinite-scroll'
 
-/** It renders a grid of clickable images, with the possibility to open them in full screen, for more details **/
+/**
+ * It renders a grid of clickable images, using infinity scroll, with the ability to open them in full screen,
+ * for more details
+ **/
 export default {
   components: {
     CoolLightBox
@@ -130,7 +134,9 @@ export default {
       return this.$store.getters['photos/getIsFullPhotoAlreadyLoaded'](photoId)
     }
   },
-  /** Mounted life-cycle hook **/
+  /**
+   * Mounted life-cycle hook
+   **/
   mounted () {
     this.$store.dispatch('photos/fetchPhotos')
   }

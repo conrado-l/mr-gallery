@@ -191,6 +191,7 @@ const actions = {
    * @param commit
    */
   resetStore ({ commit }) {
+    commit(commonTypes.RESET_STORE)
   }
 }
 

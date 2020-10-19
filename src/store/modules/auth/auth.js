@@ -81,7 +81,7 @@ const actions = {
       // Set the API key payload
       const payload = { apiKey: '23567b218376f79d9415' }
 
-      // Make the request to AgileEngine's API
+      // Make the request
       APIService.post('auth', payload)
         .then(res => {
           // Check if the token is valid
@@ -105,6 +105,7 @@ const actions = {
    * @param commit
    */
   resetStore ({ commit }) {
+    commit(commonTypes.RESET_STORE)
   }
 }
 
