@@ -2,8 +2,6 @@
  * API Service
  */
 
-const apiURL = 'http://interview.agileengine.com'
-
 /**
  * Sends a GET request
  * @param {string} url
@@ -11,7 +9,7 @@ const apiURL = 'http://interview.agileengine.com'
  * @returns {Promise<any>}
  */
 export function get (url, params = {}) {
-  return window.axios.get(`${apiURL}/${url}`, { params: { ...params } })
+  return window.axios.get(url, { params: { ...params } })
 }
 
 /**
@@ -21,7 +19,7 @@ export function get (url, params = {}) {
  * @returns {Promise<any>}
  */
 export function post (url, params = {}) {
-  return window.axios.post(`${apiURL}/${url}`, params)
+  return window.axios.post(url, params)
 }
 
 export default {
