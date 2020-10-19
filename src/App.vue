@@ -38,10 +38,7 @@
     <!--    </v-app-bar>-->
 
     <div v-if="getIsUserAuthenticated">
-      logged in
-    </div>
-    <div v-else>
-      not logged in
+      Welcome back!
     </div>
 
     <div v-if="errorAuthenticating">
@@ -50,7 +47,7 @@
 
     <v-main>
       <router-view v-if="getIsUserAuthenticated"></router-view>
-      <div v-else>Hello beautiful!</div>
+      <div v-else>We're getting ready for you! please wait</div>
     </v-main>
   </v-app>
 </template>

@@ -21,26 +21,33 @@
         md="4"
       >
         <!-- Thumbnail images -->
-        <v-img
-          v-ripple
-          :src="photo.src"
-          aspect-ratio="1"
-          class="grey lighten-2 clickable"
-          @click="fetchPhotoDetail(photoIndex, photo.id)"
-        >
-          <template v-slot:placeholder>
-            <v-row
-              class="fill-height ma-0"
-              align="center"
-              justify="center"
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-img
+              v-ripple
+              :src="photo.src"
+              aspect-ratio="1"
+              v-bind="attrs"
+              v-on="on"
+              class="grey lighten-2 clickable"
+              @click="fetchPhotoDetail(photoIndex, photo.id)"
             >
-              <v-progress-circular
-                indeterminate
-                color="grey lighten-5"
-              ></v-progress-circular>
-            </v-row>
+              <template v-slot:placeholder>
+                <v-row
+                  class="fill-height ma-0"
+                  align="center"
+                  justify="center"
+                >
+                  <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
           </template>
-        </v-img>
+          <span>Click for more details</span>
+        </v-tooltip>
         <!---->
       </v-col>
     </v-row>
