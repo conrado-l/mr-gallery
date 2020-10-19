@@ -10,7 +10,7 @@ const apiURL = 'http://interview.agileengine.com'
  * @param {object} params
  * @returns {Promise<any>}
  */
-export function get (url, params) {
+export function get (url, params = {}) {
   return window.axios.get(`${apiURL}/${url}`, { params: { ...params } })
 }
 
@@ -20,7 +20,7 @@ export function get (url, params) {
  * @param {object} params
  * @returns {Promise<any>}
  */
-export function post (url, params) {
+export function post (url, params = {}) {
   return window.axios.post(`${apiURL}/${url}`, params)
 }
 
