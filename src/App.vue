@@ -11,7 +11,7 @@
 
     <v-main>
       <router-view v-if="getIsUserAuthenticated"></router-view>
-      <div v-else>
+      <div v-else class="mt-5">
         <div class="d-flex justify-center align-center">
           <v-progress-circular
             :size="50"
