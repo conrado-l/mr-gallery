@@ -3,9 +3,9 @@
     <!-- Coolbox image library -->
     <CoolLightBox
       :items="getFullSizePhotos"
-      ref="coolBox"
       :index="index"
       :useZoomBar="true"
+      :fullScreen="true"
       @close="index = null"
       @on-change="onPhotoDetailChange($event)"
     >
@@ -17,7 +17,8 @@
         v-for="(photo, photoIndex) in getThumbnailPhotos"
         :key="photo.id"
         class="d-flex child-flex"
-        cols="4"
+        xs="1"
+        md="4"
       >
         <!-- Thumbnail images -->
         <v-img
@@ -84,7 +85,11 @@ export default {
      **/
     fetchPhotoDetail (photoIndex, photoId) {
       // Avoid duplicating requests
-      if (this.isPhotoAlreadyLoaded()) {
+      if (this.isPhotoAlreadyLoaded(photoId)) {
+        // Open the modal and show the picture if it's currently closed
+        if (!this.index) {
+          this.index = photoIndex
+        }
         return
       }
 
@@ -100,9 +105,10 @@ export default {
     },
     /**
      * Checks if the photo was already loaded for avoiding duplicating requests
+     * @param {string} photoId
      **/
     isPhotoAlreadyLoaded (photoId) {
-      return this.$store.getters['photos/getIsPhotoAlreadyLoaded'](photoId)
+      return this.$store.getters['photos/getIsFullPhotoAlreadyLoaded'](photoId)
     }
   },
   /** Mounted life-cycle hook **/

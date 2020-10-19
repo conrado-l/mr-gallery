@@ -53,11 +53,11 @@ const getters = {
     return !!state.photos.length
   },
   /**
-   * Gets the current page
+   * Checks if a photo was already loaded
    * @param state
-   * @returns {number}
+   * @returns {boolean}
    */
-  getIsPhotoAlreadyLoaded: state => photoId => {
+  getIsFullPhotoAlreadyLoaded: state => photoId => {
     return state.photos.some(photo => (photo.id === photoId) && photo.full_picture)
   },
   /**
