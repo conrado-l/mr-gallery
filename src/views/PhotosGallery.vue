@@ -3,10 +3,10 @@
     <!-- Coolbox image library -->
     <CoolLightBox
       :items="getFullSizePhotos"
-      :index="index"
+      :index="currentOpenedImageIndex"
       :useZoomBar="true"
       :fullScreen="true"
-      @close="index = null"
+      @close="currentOpenedImageIndex = null"
       @on-change="onPhotoDetailChange($event)"
     >
     </CoolLightBox>
@@ -59,7 +59,7 @@ export default {
   },
   data: function () {
     return {
-      index: null
+      currentOpenedImageIndex: null
     }
   },
   computed: {
@@ -87,8 +87,8 @@ export default {
       // Avoid duplicating requests
       if (this.isPhotoAlreadyLoaded(photoId)) {
         // Open the modal and show the picture if it's currently closed
-        if (!this.index) {
-          this.index = photoIndex
+        if (!this.currentOpenedImageIndex) {
+          this.currentOpenedImageIndex = photoIndex
         }
         return
       }
@@ -100,7 +100,7 @@ export default {
             // of the libraries that I tried, supporting zoom, panning and a modal
             document.querySelector('.cool-lightbox__slide.cool-lightbox__slide--current img').src = this.getFullSizePhotos[photoIndex].src
           })
-          this.index = photoIndex
+          this.currentOpenedImageIndex = photoIndex
         })
     },
     /**
