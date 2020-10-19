@@ -17,7 +17,7 @@ npm install
 ```
 npm run serve
 ```
-The app will be listening on port `8080` (https://localhost:8082)
+The app will be listening on port `8080` (https://localhost:8080), if it's not being used.
 
 ### Compiles and minifies for production
 ```
