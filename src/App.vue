@@ -1,17 +1,17 @@
 <template>
   <v-app>
     <Navigation></Navigation>
-    <v-snackbar v-model="getIsUserAuthenticated">
+    <v-snackbar :value="getIsUserAuthenticated">
       Welcome back!
     </v-snackbar>
 
-    <v-snackbar v-model="errorAuthenticating">
+    <v-snackbar :value="errorAuthenticating">
       An error has occurred while trying to authenticate
     </v-snackbar>
 
     <v-main>
       <router-view v-if="getIsUserAuthenticated"></router-view>
-      <div v-else class="mt-5">
+      <div v-else-if="!errorAuthenticating" class="mt-5">
         <div class="d-flex justify-center align-center">
           <v-progress-circular
             :size="50"
