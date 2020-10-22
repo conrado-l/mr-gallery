@@ -60,7 +60,10 @@
 </template>
 
 <script>
+// Vuex
 import { mapGetters } from 'vuex'
+
+// Plugins
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import infiniteScroll from 'vue-infinite-scroll'

@@ -182,12 +182,12 @@ const actions = {
             commit(types.SET_PHOTO_DETAILS, res.data)
             resolve()
           } else {
-            console.error('An error has occurred while trying to fetch the image detail', res)
+            console.error('An error has occurred while trying to fetch the photo detail', res)
             reject(res)
           }
         })
         .catch((err) => {
-          console.error('An error has occurred while trying to fetch the image detail', err)
+          console.error('An error has occurred while trying to fetch the photo detail', err)
           reject(err)
         })
     })
