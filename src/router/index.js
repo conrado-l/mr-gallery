@@ -1,5 +1,10 @@
+// Vue
 import Vue from 'vue'
+
+// Plugins
 import VueRouter from 'vue-router'
+
+// Views
 import PhotosGallery from '../views/PhotosGallery.vue'
 
 Vue.use(VueRouter)

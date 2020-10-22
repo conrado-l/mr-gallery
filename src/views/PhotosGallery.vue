@@ -13,7 +13,8 @@
     <!---->
 
     <!-- Infinity scroll -->
-    <div v-infinite-scroll="fetchThumnbnailImages" infinite-scroll-distance="10">
+    <div v-infinite-scroll="fetchThumbnailImages"
+         :infinite-scroll-distance="10">
       <v-row>
         <v-col
           v-for="(photo, photoIndex) in getThumbnailPhotos"
@@ -81,16 +82,24 @@ export default {
   computed: {
     ...mapGetters('photos', [
       'getThumbnailPhotos',
-      'getFullSizePhotos'
+      'getFullSizePhotos',
+      'getIsFetching'
     ])
   },
   methods: {
     /**
-     * Fetches thumbnail images
+     * Fetches the thumbnail images
      /**/
-    fetchThumnbnailImages () {
-      this.$store.commit('photos/SET_CURRENT_PAGE')
+    fetchThumbnailImages () {
+      // Prevent multiple calls if there is a fetch in progress
+      if (this.getIsFetching) {
+        return
+      }
+
       this.$store.dispatch('photos/fetchPhotos')
+        .catch(() => {
+          this.$toast.error('An error has occurred while fetching the photos')
+        })
     },
     /**
      * Fired when the photo is changed from the detail modal
@@ -125,6 +134,9 @@ export default {
           })
           this.currentOpenedImageIndex = photoIndex
         })
+        .catch(() => {
+          this.$toast.error('An error has occurred while fetching the photo detail')
+        })
     },
     /**
      * Checks if the photo was already loaded for avoiding duplicating requests
@@ -133,12 +145,6 @@ export default {
     isPhotoAlreadyLoaded (photoId) {
       return this.$store.getters['photos/getIsFullPhotoAlreadyLoaded'](photoId)
     }
-  },
-  /**
-   * Mounted life-cycle hook
-   **/
-  mounted () {
-    this.$store.dispatch('photos/fetchPhotos')
   }
 }
 </script>

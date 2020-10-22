@@ -79,13 +79,13 @@ const actions = {
   fetchToken ({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
       // Set the API key payload
-      const payload = { apiKey: '23567b218376f79d9415' }
+      const payload = { apiKey: process.env.VUE_APP_API_TOKEN }
 
       // Make the request
       APIService.post('auth', payload)
         .then(res => {
-          // Check if the token is valid
-          if (res?.data?.token && typeof res.data.token === 'string') {
+          // Check if the token and auth fields are valid
+          if (res?.data?.token && typeof res.data.token === 'string' && res?.data?.auth === true) {
             commit(types.SET_TOKEN, res.data.token)
             commit(types.SET_AUTHENTICATED_STATUS, true)
             resolve()

@@ -94,7 +94,7 @@ const mutations = {
    * @param state
    * @param {number} pageNumber
    */
-  [types.SET_CURRENT_PAGE] (state) {
+  [types.SET_NEXT_PAGE] (state) {
     state.currentPage += 1
   },
   /**
@@ -129,7 +129,7 @@ const mutations = {
    * @param {boolean} status
    */
   [types.SET_FETCHING_STATUS] (state, status) {
-    state.fettching = status
+    state.fetching = status
   }
 }
 
@@ -142,12 +142,15 @@ const actions = {
    */
   fetchPhotos ({ commit, dispatch, getters }) {
     return new Promise((resolve, reject) => {
+      commit(types.SET_FETCHING_STATUS, true)
+
       // Make the request
       APIService.get('images', { page: getters.getCurrentPage })
         .then((res) => {
           // Check if the pictures field is valid
           if (res?.data?.pictures && typeof res.data.pictures === 'object') {
             commit(types.SET_PHOTOS, res.data.pictures)
+            commit(types.SET_NEXT_PAGE)
             resolve()
           } else {
             console.error('An error has occurred while trying to fetch the photos', res)
@@ -157,6 +160,9 @@ const actions = {
         .catch((err) => {
           console.error('An error has occurred while trying to fetch the photos', err)
           reject(err)
+        })
+        .finally(() => {
+          commit(types.SET_FETCHING_STATUS, false)
         })
     })
   },

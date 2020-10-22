@@ -1,13 +1,6 @@
 <template>
   <v-app>
     <Navigation></Navigation>
-    <v-snackbar :value="getIsUserAuthenticated">
-      Welcome back!
-    </v-snackbar>
-
-    <v-snackbar :value="errorAuthenticating">
-      An error has occurred while trying to authenticate
-    </v-snackbar>
 
     <v-main>
       <router-view v-if="getIsUserAuthenticated"></router-view>
@@ -15,7 +8,7 @@
         <div class="d-flex justify-center align-center">
           <v-progress-circular
             :size="50"
-            color="primary"
+            color="secondary"
             indeterminate
           ></v-progress-circular>
           <span class="ml-3"> we're getting ready for you! please wait </span>
@@ -43,13 +36,14 @@ export default {
       'getIsUserAuthenticated'
     ])
   },
-  /** Mounted life-cycle hook */
+  /** Created life-cycle hook */
   created () {
     this.$store.dispatch('auth/fetchToken')
       .then(() => {
-        this.showSnackbar = true
+        this.$toast('Welcome back!', { x: 'center', color: 'secondary' })
       })
       .catch(() => {
+        this.$toast.error('An error has occurred while trying to authenticate')
         this.errorAuthenticating = true
       })
   }

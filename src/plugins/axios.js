@@ -5,7 +5,7 @@ import axios from 'axios'
 import authStore from '../store/modules/auth/auth'
 
 const config = {
-  baseURL: 'http://interview.agileengine.com'
+  baseURL: process.env.VUE_APP_API_BASE_URL
 }
 
 const _axios = axios.create(config)

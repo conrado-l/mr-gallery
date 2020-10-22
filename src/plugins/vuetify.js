@@ -1,7 +1,20 @@
+// Vue
 import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
 
-Vue.use(Vuetify)
+// Vuetify
+import Vuetify, { VSnackbar, VBtn, VIcon } from 'vuetify/lib'
+
+// Plugins
+import VuetifyToast from 'vuetify-toast-snackbar-ng'
+
+Vue.use(VuetifyToast)
+Vue.use(Vuetify, {
+  components: {
+    VIcon,
+    VBtn,
+    VSnackbar
+  }
+})
 
 export default new Vuetify({
   theme: {
