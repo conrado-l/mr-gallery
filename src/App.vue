@@ -40,7 +40,7 @@ export default {
   created () {
     this.$store.dispatch('auth/fetchToken')
       .then(() => {
-        this.$toast('Welcome back!', { x: 'center', color: 'secondary' })
+        this.$toast('Welcome back!', { color: 'primary' })
       })
       .catch(() => {
         this.$toast.error('An error has occurred while trying to authenticate')

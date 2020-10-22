@@ -10,10 +10,6 @@ exports[`PhotosGallery.vue should render the component correctly 1`] = `
     <!---->
   </transition-stub>
    
-  <div>
-     
-  </div>
-   
   <div
     infinite-scroll-distance="10"
   >

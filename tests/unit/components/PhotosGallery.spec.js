@@ -9,7 +9,6 @@ import { Store } from 'vuex-mock-store'
 import PhotosGallery from '@/views/PhotosGallery'
 
 describe('PhotosGallery.vue', () => {
-
   const store = new Store({
     state: {
       photos: { // Required for vuex-mock-store
@@ -48,6 +47,7 @@ describe('PhotosGallery.vue', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
+  // TODO: find out why infinite-scroll is not being rendered and triggered correctly
   it('should call the action for fetching the initial thumbnail photos', async () => {
     const wrapper = factoryMount()
 
