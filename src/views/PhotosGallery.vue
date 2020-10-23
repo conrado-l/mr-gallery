@@ -4,7 +4,7 @@
                 :fetching-photos="getIsFetchingPhotos"
                 :fetching-photo-details="getIsFetchingPhotoDetails"
                 @load-more-photos="fetchThumbnailPhotos()"
-                @photo-clicked="fetchPhotoDetail($event)">
+                @load-photo-detail="fetchPhotoDetail($event)">
     </PhotosGrid>
   </v-container>
 </template>
@@ -46,10 +46,12 @@ export default {
     },
 
     /**
-     * Fetches the photo detail *
+     * Fetches the photo detail
      * @param {string} photoId
      **/
     fetchPhotoDetail (photoId) {
+      console.log('Photo ID', photoId)
+      console.log('Is loaded', this.getIsPhotoDetailsLoaded(photoId))
       // Avoid duplicating requests
       if (this.getIsPhotoDetailsLoaded(photoId)) {
         debugger
@@ -57,8 +59,6 @@ export default {
       }
 
       this.$store.dispatch('photos/fetchPhotoDetail', photoId)
-        .then(() => {
-        })
         .catch(() => {
           this.$toast.error('An error has occurred while fetching the photo detail')
         })

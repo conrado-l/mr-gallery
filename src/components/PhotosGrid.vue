@@ -75,17 +75,17 @@ export default {
 
   name: 'PhotosGrid',
   props: {
-    /** Contains the photos **/
+    /** Contains the photos to be displayed **/
     photos: {
       type: Array,
       required: true
     },
-    /** Checks if the photos are being fetched**/
+    /** Checks if the photos are being fetched **/
     fetchingPhotos: {
       type: Boolean,
       required: true
     },
-    /** Checks if the photo's details are being fetched**/
+    /** Checks if the photo's details are being fetched **/
     fetchingPhotoDetails: {
       type: Boolean,
       required: true
@@ -112,7 +112,7 @@ export default {
       this.$emit('load-more-photos')
     },
     /**
-     * Notifies that the the user changed the photo from the detail modal
+     * Notifies that the user changed the photo from the detail modal
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
@@ -130,7 +130,7 @@ export default {
      * @param {string} photoId
      **/
     onPhotoClick (photoIndex, photoId) {
-      this.$emit('photo-clicked', photoId)
+      this.$emit('load-photo-detail', photoId)
       this.currentOpenedPhotoIndex = photoIndex
     }
   }

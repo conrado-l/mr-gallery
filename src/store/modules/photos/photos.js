@@ -109,9 +109,7 @@ const mutations = {
     state.photos = state.photos.map(photo => {
       // Update the photo with the actual details
       if (photo.id === photoDetails.id) {
-        return {
-          ...photoDetails
-        }
+        return photoDetails
       } else {
         return photo
       }
