@@ -17,7 +17,7 @@ import { mapGetters } from 'vuex'
 import PhotosGrid from '@/components/PhotosGrid'
 
 /**
- * It renders a gallery of photos in a grid
+ * A gallery of photos in a grid, fetched from the API
  **/
 export default {
   components: { PhotosGrid },

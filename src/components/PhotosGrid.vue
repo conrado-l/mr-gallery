@@ -6,6 +6,7 @@
       :index="currentOpenedPhotoIndex"
       :useZoomBar="true"
       :fullScreen="true"
+      :loop="false"
       effect="fade"
       @close="currentOpenedPhotoIndex = null"
       @on-change="onPhotoDetailChange($event)"
@@ -68,8 +69,7 @@ import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import infiniteScroll from 'vue-infinite-scroll'
 
 /**
- * It renders a grid of clickable images, using infinity scroll, with the ability to open them in full screen,
- * for more details
+ * A grid of clickable photos, using infinity scroll, with the ability to open them in full screen, for more details
  **/
 export default {
 
