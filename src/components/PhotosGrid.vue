@@ -121,18 +121,23 @@ export default {
         return
       }
 
-      const photoId = this.photos[photoIndex].id
-
-      this.onPhotoClick(photoIndex, photoId)
+      this.notifyPhotoDetail(this.photos[photoIndex].id)
     },
     /**
-     * Notifies that a photo was clicked and it also opens the detail modal for showing the photo in full size
+     * Notifies that a photo was clicked, it also opens the detail modal for showing the photo in full size
      * @param {number} photoIndex
      * @param {string} photoId
      **/
     onPhotoClick (photoIndex, photoId) {
-      this.$emit('load-photo-detail', photoId)
+      this.notifyPhotoDetail(photoId)
       this.currentOpenedPhotoIndex = photoIndex
+    },
+    /**
+     * Notifies that we need the details for a particular photo
+     * @param {string} photoId
+     */
+    notifyPhotoDetail (photoId) {
+      this.$emit('load-photo-detail', photoId)
     }
   }
 }
