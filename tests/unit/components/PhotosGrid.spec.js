@@ -98,7 +98,7 @@ describe('PhotosGrid.vue', () => {
     await wrapper.vm.$nextTick()
 
     // Check that the event was emitted
-    expect(wrapper.emitted('load-photos')).toBeTruthy()
+    expect(wrapper.emitted('load-more-photos')).toBeTruthy()
   })
 
   // TODO: do (more) research on why Vuetify's "VImg" component shows in the preload status in tests, even after using $nextTick,
