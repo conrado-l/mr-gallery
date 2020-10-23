@@ -117,7 +117,6 @@ export default {
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
-      debugger
       if (this.fetchingPhotoDetails) {
         return
       }
