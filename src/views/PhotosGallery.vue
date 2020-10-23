@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <PhotosGrid :full-size-photos="getFullSizePhotos"
-                :thumbnail-photos="getThumbnailPhotos"
-                :is-fetching="getIsFetching"
+    <PhotosGrid :photos="getPhotos"
+                :fetching-photos="getIsFetchingPhotos"
+                :fetching-photo-details="getIsFetchingPhotoDetails"
                 @load-more-photos="fetchThumbnailPhotos()"
                 @photo-clicked="fetchPhotoDetail($event)">
     </PhotosGrid>
@@ -23,10 +23,10 @@ export default {
   components: { PhotosGrid },
   computed: {
     ...mapGetters('photos', [
-      'getThumbnailPhotos',
-      'getFullSizePhotos',
-      'getIsFetching',
-      'getIsFullPhotoAlreadyLoaded'
+      'getPhotos',
+      'getIsFetchingPhotos',
+      'getIsFetchingPhotoDetails',
+      'getIsPhotoDetailsLoaded'
     ])
   },
   methods: {
@@ -35,7 +35,7 @@ export default {
      /**/
     fetchThumbnailPhotos () {
       // Prevent multiple calls if there is a fetch in progress
-      if (this.getIsFetching) {
+      if (this.getIsFetchingPhotos) {
         return
       }
 
@@ -51,7 +51,8 @@ export default {
      **/
     fetchPhotoDetail (photoId) {
       // Avoid duplicating requests
-      if (this.getIsFullPhotoAlreadyLoaded(photoId)) {
+      if (this.getIsPhotoDetailsLoaded(photoId)) {
+        debugger
         return
       }
 

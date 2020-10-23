@@ -9,38 +9,26 @@ import APIService from '@/services/apiService'
 const initialState = () => ({
   photos: [],
   currentPage: 1,
-  fetching: false
+  fetchingPhotos: false,
+  fetchingPhotoDetail: false
 })
 
 const state = initialState()
 
 const getters = {
   /**
-   * Gets the thumbnail photos
-   * NOTE: This is a caveat/workaround for the library that I'm currently using, I know this is not the best way to do it
+   * Gets the photos photos
    * @param state
    * @returns {array}
    */
-  getThumbnailPhotos: state => {
+  getPhotos: state => {
     return state.photos.map(photo => {
       return {
         ...photo,
-        thumb: photo.cropped_picture
-      }
-    })
-  },
-  /**
-   * Gets the full size photos
-   * NOTE: This is a caveat/workaround for the library that I'm currently using, I know this is not the best way to do it
-   * @param state
-   * @returns {array}
-   */
-  getFullSizePhotos: state => {
-    return state.photos.map(photo => {
-      return {
+        thumb: photo.cropped_picture,
+        src: photo.full_picture || photo.cropped_picture,
         title: photo.author ? `By ${photo.author} ` : '',
-        description: photo.camera && photo.tags ? `Camera model: ${photo.camera} | Hashtags: ${photo.tags || ''}` : '',
-        src: photo.full_picture || photo.cropped_picture
+        description: photo.camera && photo.tags ? `Camera model: ${photo.camera} | Hashtags: ${photo.tags || ''}` : ''
       }
     })
   },
@@ -53,11 +41,11 @@ const getters = {
     return !!state.photos.length
   },
   /**
-   * Checks if a photo was already loaded
+   * Checks if a photo's details was already loaded
    * @param state
    * @returns {boolean}
    */
-  getIsFullPhotoAlreadyLoaded: state => photoId => {
+  getIsPhotoDetailsLoaded: state => photoId => {
     return state.photos.some(photo => (photo.id === photoId) && photo.full_picture)
   },
   /**
@@ -69,12 +57,20 @@ const getters = {
     return state.currentPage
   },
   /**
-   * Gets the fetching state
+   * Gets the fetching state for the photos
    * @param state
    * @returns {boolean}
    */
-  getIsFetching: state => {
-    return state.fetching
+  getIsFetchingPhotos: state => {
+    return state.fetchingPhotos
+  },
+  /**
+   * Gets the fetching state for the photo details
+   * @param state
+   * @returns {boolean}
+   */
+  getIsFetchingPhotoDetails: state => {
+    return state.fetchingPhotoDetail
   }
 }
 
@@ -92,7 +88,6 @@ const mutations = {
   /**
    * Sets the current page
    * @param state
-   * @param {number} pageNumber
    */
   [types.SET_NEXT_PAGE] (state) {
     state.currentPage += 1
@@ -115,8 +110,7 @@ const mutations = {
       // Update the photo with the actual details
       if (photo.id === photoDetails.id) {
         return {
-          ...photoDetails,
-          src: photoDetails.full_picture
+          ...photoDetails
         }
       } else {
         return photo
@@ -124,12 +118,20 @@ const mutations = {
     })
   },
   /**
-   * Sets the fetching status
+   * Sets the fetching status for the photos
    * @param state
    * @param {boolean} status
    */
-  [types.SET_FETCHING_STATUS] (state, status) {
-    state.fetching = status
+  [types.SET_FETCHING_PHOTOS_STATUS] (state, status) {
+    state.fetchingPhotos = status
+  },
+  /**
+   * Sets the fetching status for the photo details
+   * @param state
+   * @param {boolean} status
+   */
+  [types.SET_FETCHING_PHOTO_DETAILS_STATUS] (state, status) {
+    state.fetchingPhotoDetail = status
   }
 }
 
@@ -142,7 +144,7 @@ const actions = {
    */
   fetchPhotos ({ commit, dispatch, getters }) {
     return new Promise((resolve, reject) => {
-      commit(types.SET_FETCHING_STATUS, true)
+      commit(types.SET_FETCHING_PHOTOS_STATUS, true)
 
       // Make the request
       APIService.get('images', { page: getters.getCurrentPage })
@@ -162,7 +164,7 @@ const actions = {
           reject(err)
         })
         .finally(() => {
-          commit(types.SET_FETCHING_STATUS, false)
+          commit(types.SET_FETCHING_PHOTOS_STATUS, false)
         })
     })
   },
@@ -175,6 +177,8 @@ const actions = {
    */
   fetchPhotoDetail ({ commit, dispatch, getters }, photoId) {
     return new Promise((resolve, reject) => {
+      commit(types.SET_FETCHING_PHOTO_DETAILS_STATUS, true)
+
       APIService.get(`images/${photoId}`, {})
         .then((res) => {
           // Check if the data field is valid
@@ -189,6 +193,9 @@ const actions = {
         .catch((err) => {
           console.error('An error has occurred while trying to fetch the photo detail', err)
           reject(err)
+        })
+        .finally(() => {
+          commit(types.SET_FETCHING_PHOTO_DETAILS_STATUS, false)
         })
     })
   },

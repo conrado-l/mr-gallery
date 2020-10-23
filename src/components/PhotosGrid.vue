@@ -2,11 +2,12 @@
   <div>
     <!-- Coolbox photo library -->
     <CoolLightBox
-      :items="fullSizePhotos"
-      :index="currentOpenedImageIndex"
+      :items="photos"
+      :index="currentOpenedPhotoIndex"
       :useZoomBar="true"
       :fullScreen="true"
-      @close="currentOpenedImageIndex = null"
+      effect="fade"
+      @close="currentOpenedPhotoIndex = null"
       @on-change="onPhotoDetailChange($event)"
     >
     </CoolLightBox>
@@ -17,7 +18,7 @@
          :infinite-scroll-distance="10">
       <v-row>
         <v-col
-          v-for="(photo, photoIndex) in thumbnailPhotos"
+          v-for="(photo, photoIndex) in photos"
           :key="photo.id"
           class="d-flex child-flex"
           xs="1"
@@ -74,25 +75,25 @@ export default {
 
   name: 'PhotosGrid',
   props: {
-    /** Array containing the full size photos **/
-    fullSizePhotos: {
+    /** Contains the photos **/
+    photos: {
       type: Array,
       required: true
     },
-    /** Array containing the thumbnail photos **/
-    thumbnailPhotos: {
-      type: Array,
+    /** Checks if the photos are being fetched**/
+    fetchingPhotos: {
+      type: Boolean,
       required: true
     },
-    /** Fetching state **/
-    isFetching: {
+    /** Checks if the photo's details are being fetched**/
+    fetchingPhotoDetails: {
       type: Boolean,
       required: true
     }
   },
   data: function () {
     return {
-      currentOpenedImageIndex: null
+      currentOpenedPhotoIndex: null
     }
   },
   components: {
@@ -101,60 +102,36 @@ export default {
   directives: { infiniteScroll },
   methods: {
     /**
-     * Fetches the thumbnail images
+     * Notifies that the user scrolled down for loading more images
      /**/
     onInfiniteScrollLoadMore () {
-      if (this.isFetching) {
+      if (this.fetchingPhotos) {
         return
       }
 
       this.$emit('load-more-photos')
     },
     /**
-     * Fired when the photo is changed from the detail modal
+     * Notifies that the the user changed the photo from the detail modal
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
-      const photoId = this.thumbnailPhotos[photoIndex].id
+      if (this.fetchingPhotoDetails) {
+        return
+      }
+
+      const photoId = this.photos[photoIndex].id
 
       this.onPhotoClick(photoIndex, photoId)
     },
     /**
-     * Fetches the photo detail and opens the modal if its not open already *
+     * Notifies that a photo was clicked and it also opens the detail modal for showing the photo in full size
      * @param {number} photoIndex
      * @param {string} photoId
      **/
     onPhotoClick (photoIndex, photoId) {
-      // Avoid duplicating requests
-      // if (this.isPhotoAlreadyLoaded(photoId)) {
-      //   // Open the modal and show the photo if it's currently closed
-      //   if (!this.currentOpenedImageIndex) {
-      //     this.currentOpenedImageIndex = photoIndex
-      //   }
-      //   return
-      // }
-
       this.$emit('photo-clicked', photoId)
-      //
-      // this.$store.dispatch('photos/fetchPhotoDetail', photoId)
-      //   .then(() => {
-      //     setTimeout(() => {
-      //       // Ugly workaround to make the library update the photo since it does not support it, neither V-viewer or the rest
-      //       // of the libraries that I tried, supporting zoom, panning and a modal
-      //       document.querySelector('.cool-lightbox__slide.cool-lightbox__slide--current img').src = this.fullSizePhotos[photoIndex].src
-      //     })
-      this.currentOpenedImageIndex = photoIndex
-      //   })
-      //   .catch(() => {
-      //     this.$toast.error('An error has occurred while fetching the photo detail')
-      //   })
-    },
-    /**
-     * Checks if the photo was already loaded for avoiding duplicating requests
-     * @param {string} photoId
-     **/
-    isPhotoAlreadyLoaded (photoId) {
-      return this.$store.getters['photos/getIsFullPhotoAlreadyLoaded'](photoId)
+      this.currentOpenedPhotoIndex = photoIndex
     }
   }
 }
