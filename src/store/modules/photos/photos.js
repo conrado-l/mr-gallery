@@ -17,7 +17,7 @@ const state = initialState()
 
 const getters = {
   /**
-   * Gets the photos photos
+   * Gets the photos
    * @param state
    * @returns {array}
    */
@@ -148,7 +148,7 @@ const actions = {
       APIService.get('images', { page: getters.getCurrentPage })
         .then((res) => {
           // Check if the pictures field is valid
-          if (res?.data?.pictures && typeof res.data.pictures === 'object') {
+          if (res?.data?.pictures && Array.isArray(res.data.pictures)) {
             commit(types.SET_PHOTOS, res.data.pictures)
             commit(types.SET_NEXT_PAGE)
             resolve()
