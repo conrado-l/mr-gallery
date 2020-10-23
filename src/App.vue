@@ -20,7 +20,10 @@
 
 <script>
 
+// Vuex
 import { mapGetters } from 'vuex'
+
+// Components
 import Navigation from '@/components/Navigation'
 
 /** The app's main component **/
@@ -28,8 +31,7 @@ export default {
   name: 'App',
   components: { Navigation },
   data: () => ({
-    errorAuthenticating: false,
-    showSnackbar: false
+    errorAuthenticating: false
   }),
   computed: {
     ...mapGetters('auth', [

@@ -25,7 +25,7 @@ const getters = {
     return state.photos.map(photo => {
       return {
         ...photo,
-        src: photo.cropped_picture
+        thumb: photo.cropped_picture
       }
     })
   },
