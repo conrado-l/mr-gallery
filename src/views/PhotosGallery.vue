@@ -50,11 +50,8 @@ export default {
      * @param {string} photoId
      **/
     fetchPhotoDetail (photoId) {
-      console.log('Photo ID', photoId)
-      console.log('Is loaded', this.getIsPhotoDetailsLoaded(photoId))
       // Avoid duplicating requests
       if (this.getIsPhotoDetailsLoaded(photoId)) {
-        debugger
         return
       }
 

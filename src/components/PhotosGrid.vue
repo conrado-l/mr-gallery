@@ -7,6 +7,7 @@
       :useZoomBar="true"
       :fullScreen="true"
       :loop="false"
+      :gallery="false"
       effect="fade"
       @close="currentOpenedPhotoIndex = null"
       @on-change="onPhotoDetailChange($event)"
@@ -116,6 +117,7 @@ export default {
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
+      debugger
       if (this.fetchingPhotoDetails) {
         return
       }
