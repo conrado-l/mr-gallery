@@ -1,19 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PhotosGrid.vue should render the component correctly 1`] = `
-<div>
-  <transition-stub
-    name="cool-lightbox-modal"
-  >
-    <!---->
-  </transition-stub>
-   
-  <div
-    infinite-scroll-distance="10"
-  >
+exports[`PhotosGallery.vue should render the component correctly 1`] = `
+<div
+  class="container"
+>
+  <div>
+    <transition-stub
+      name="cool-lightbox-modal"
+    >
+      <!---->
+    </transition-stub>
+     
     <div
-      class="row"
-    />
+      infinite-scroll-distance="10"
+    >
+      <div
+        class="row"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PhotosGrid.vue should render the component correctly 1`] = `
+<div
+  class="container"
+>
+  <div>
+    <transition-stub
+      name="cool-lightbox-modal"
+    >
+      <!---->
+    </transition-stub>
+     
+    <div
+      infinite-scroll-distance="10"
+    >
+      <div
+        class="row"
+      />
+    </div>
   </div>
 </div>
 `;

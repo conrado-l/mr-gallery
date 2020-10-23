@@ -8,9 +8,9 @@ import { Store } from 'vuex-mock-store'
 import Vuetify from 'vuetify'
 
 // Components
-import PhotosGallery from '@/views/PhotosGallery'
+import App from '@/App'
 
-describe('PhotosGallery.vue', () => {
+describe('App.vue', () => {
   const localVue = createLocalVue()
   let vuetify
 
@@ -18,11 +18,15 @@ describe('PhotosGallery.vue', () => {
 
   // Reusable factory mount
   const factoryMount = () => {
-    return mount(PhotosGallery, {
+    return mount(App, {
       localVue,
       vuetify,
+      stubs: ['router-view'],
       mocks: {
-        $store: store
+        $store: store,
+        $toast: {
+          error: jest.fn()
+        }
       }
     })
   }
@@ -32,21 +36,24 @@ describe('PhotosGallery.vue', () => {
 
     store = new Store({
       state: {
-        photos: {
-          photos: [],
-          currentPage: 1,
-          fetchingPhotos: false,
-          fetchingPhotoDetail: false
+        auth: {
+          token: null,
+          authenticated: false,
+          fetching: false
         }
       },
       getters: {
-        'photos/getPhotos': [],
-        'photos/getIsFetchingPhotos': false,
-        'photos/getIsFetchingPhotoDetails': false
+        'auth/getToken': null,
+        'auth/getIsUserAuthenticated': false,
+        'auth/getFetchingState': false
       }
     })
 
     store.dispatch = jest.fn().mockResolvedValue('data') // dispatch has to return a promise
+  })
+
+  afterEach(() => {
+    store.reset()
   })
 
   it('should render the component correctly', () => {
@@ -56,15 +63,11 @@ describe('PhotosGallery.vue', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  // NOTE: same problem with "vue-infinite-scroll" as in PhotosGrid.spec.js:83, so this test will fail
-  it.skip('should initially call the fetch photos action coming from the PhotosGrid emitted event', async () => {
+  it('should initially call the fetch token action', () => {
     // Instantiate the component
-    const wrapper = factoryMount()
-
-    // Wait for the next tick
-    await wrapper.vm.$nextTick()
+    factoryMount()
 
     // Check if the action was dispatched
-    expect(store.dispatch).toHaveBeenCalledWith('photos/fetchPhotos')
+    expect(store.dispatch).toHaveBeenCalledWith('auth/fetchToken')
   })
 })
