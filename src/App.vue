@@ -1,21 +1,14 @@
 <template>
-  <v-app>
+  <div>
     <Navigation></Navigation>
 
-    <v-main>
-      <router-view v-if="getIsUserAuthenticated"></router-view>
-      <div v-else-if="!errorAuthenticating" class="mt-5">
-        <div class="d-flex justify-center align-center">
-          <v-progress-circular
-            :size="50"
-            color="secondary"
-            indeterminate
-          ></v-progress-circular>
-          <span class="ml-3"> we're getting ready for you! please wait </span>
-        </div>
+    <router-view v-if="getIsUserAuthenticated"></router-view>
+    <div v-else-if="!errorAuthenticating" class="mt-5">
+      <div class="d-flex justify-center align-center">
+        <span class="ml-3"> we're getting ready for you! please wait </span>
       </div>
-    </v-main>
-  </v-app>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -42,10 +35,10 @@ export default {
   created () {
     this.$store.dispatch('auth/fetchToken')
       .then(() => {
-        this.$toast('Welcome back!', { color: 'primary' })
+        // this.$toast('Welcome back!', { color: 'primary' })
       })
       .catch(() => {
-        this.$toast.error('An error has occurred while trying to authenticate')
+        // this.$toast.error('An error has occurred while trying to authenticate')
         this.errorAuthenticating = true
       })
   }

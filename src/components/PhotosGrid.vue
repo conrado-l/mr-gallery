@@ -1,72 +1,51 @@
 <template>
-  <div>
+  <div class="container">
+    <PhotosDetailViewer
+      :photos="photos"
+      :current-photo-index="currentOpenedPhotoIndex"
+      thumbnailField="thumbnailPhoto"
+      fullPhotoField="fullPhoto"
+      @close="onViewerClose()"
+      @photo-changed="onPhotoDetailChange($event)">
+    </PhotosDetailViewer>
     <!-- Coolbox photo library -->
-    <CoolLightBox
-      :items="photos"
-      :index="currentOpenedPhotoIndex"
-      :useZoomBar="true"
-      :fullScreen="true"
-      :loop="false"
-      :gallery="false"
-      effect="fade"
-      @close="currentOpenedPhotoIndex = null"
-      @on-change="onPhotoDetailChange($event)"
-    >
-    </CoolLightBox>
+    <!--    <CoolLightBox-->
+    <!--      :items="photos"-->
+    <!--      :index="currentOpenedPhotoIndex"-->
+    <!--      :useZoomBar="true"-->
+    <!--      :fullScreen="true"-->
+    <!--      :loop="false"-->
+    <!--      :gallery="false"-->
+    <!--      effect="fade"-->
+    <!--      @close="currentOpenedPhotoIndex = null"-->
+    <!--      @on-change="onPhotoDetailChange($event)"-->
+    <!--    >-->
+    <!--    </CoolLightBox>-->
     <!---->
-
     <!-- Infinity scroll -->
     <div v-infinite-scroll="onInfiniteScrollLoadMore"
          :infinite-scroll-distance="10">
-      <v-row>
-        <v-col
+      <!-- Thumbnail photos -->
+      <div class="grid-container">
+        <CardPhoto
           v-for="(photo, photoIndex) in photos"
           :key="photo.id"
-          class="d-flex child-flex"
-          xs="1"
-          sm="1"
-          md="4"
-        >
-          <!-- Thumbnail photos -->
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-img
-                class="grey lighten-2 clickable"
-                :src="photo.thumb"
-                v-ripple
-                v-bind="attrs"
-                v-on="on"
-                data-test="thumbnail-photo"
-                @click="onPhotoClick(photoIndex, photo.id)"
-              >
-                <template v-slot:placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey lighten-5"
-                    ></v-progress-circular>
-                  </v-row>
-                </template>
-              </v-img>
-            </template>
-            <span>Click for more details</span>
-          </v-tooltip>
-          <!---->
-        </v-col>
-      </v-row>
+          :thumbnail="photo.thumbnailPhoto"
+          data-test="thumbnail-photo"
+          @click.native="onPhotoClick(photoIndex, photo.id)">
+        </CardPhoto>
+        <!---->
+      </div>
     </div>
-    <!----->
   </div>
 </template>
 
 <script>
+// Components
+import CardPhoto from '@/components/CardPhoto'
+import PhotosDetailViewer from '@/components/PhotosDetailViewer'
+
 // Plugins
-import CoolLightBox from 'vue-cool-lightbox'
-import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import infiniteScroll from 'vue-infinite-scroll'
 
 /**
@@ -98,7 +77,8 @@ export default {
     }
   },
   components: {
-    CoolLightBox
+    PhotosDetailViewer,
+    CardPhoto
   },
   directives: { infiniteScroll },
   methods: {
@@ -117,9 +97,11 @@ export default {
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
-      if (this.fetchingPhotoDetails) {
-        return
-      }
+      // if (this.fetchingPhotoDetails) {
+      //   return
+      // }
+
+      this.currentOpenedPhotoIndex = photoIndex
 
       this.notifyPhotoDetail(this.photos[photoIndex].id)
     },
@@ -138,13 +120,28 @@ export default {
      */
     notifyPhotoDetail (photoId) {
       this.$emit('load-photo-detail', photoId)
+    },
+    /**
+     * Fired when the viewer is closed
+     */
+    onViewerClose () {
+      this.currentOpenedPhotoIndex = null
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.clickable {
-  cursor: pointer;
+@import "../assets/styles/helpers";
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-gap: 20px;
 }
+
+.grid-item {
+
+}
+
 </style>

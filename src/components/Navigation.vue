@@ -1,12 +1,12 @@
 <template>
-  <v-app-bar
-    app
-    color="primary"
-    dark
-    class="d-flex justify-center"
-  >
-    <v-toolbar-title>Madison Reed | Gallery</v-toolbar-title>
-  </v-app-bar>
+<!--  <v-app-bar-->
+<!--    app-->
+<!--    color="primary"-->
+<!--    dark-->
+<!--    class="d-flex justify-center"-->
+<!--  >-->
+    <div>Madison Reed | Gallery</div>
+<!--  </v-app-bar>-->
 </template>
 
 <script>
