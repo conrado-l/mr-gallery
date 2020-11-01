@@ -52,12 +52,34 @@
           <img class="overlay-action-button"
                src="../assets/images/icons/share.svg">
         </div>
+
+        <!-- Navigation arrows -->
+        <!-- Previous photo -->
+        <div v-show="!isFirstPhoto"
+            class="previous-button-container overlay-button-container navigation-button cursor-pointer "
+            @click="previousPhoto()"
+            title="Previous photo">
+          <img src="../assets/images/icons/left-arrow.svg"
+               class="overlay-action-button">
+        </div>
+
+        <!-- Next photo -->
+        <div v-show="!isLastPhoto"
+            class="next-button-container overlay-button-container navigation-button cursor-pointer"
+            @click="nextPhoto()"
+            title="Next photo">
+          <img src="../assets/images/icons/right-arrow.svg"
+               class="overlay-action-button">
+        </div>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
+// Utils
+import { copyTextToClipboard } from '@/utils/utils'
+
 export default {
   name: 'PhotosDetailViewer',
   data: () => ({
@@ -68,13 +90,11 @@ export default {
     isSwipping: false,
     isDraggingSwipe: false,
     swipeType: null,
-    scale: 1,
     top: 0,
     left: 0,
     lastX: 0,
     lastY: 0,
     canZoom: true,
-    transition: 'all .3s ease',
     initialMouseX: 0,
     initialMouseY: 0,
     endMouseX: 0,
@@ -178,6 +198,18 @@ export default {
      */
     getPhotoThumbnailURL () {
       return this.getPhotoField(this.thumbnailField) || ''
+    },
+    /**
+     * Checks if the first photo is being displayed
+     */
+    isFirstPhoto () {
+      return this.currentPhotoIndex === 0
+    },
+    /**
+     * Checks if the last photo is being displayed
+     */
+    isLastPhoto () {
+      return this.currentPhotoIndex === this.photos.length - 1
     }
   },
   methods: {
@@ -199,6 +231,11 @@ export default {
      * Next photo
      */
     nextPhoto () {
+      if (this.isLastPhoto) {
+        return
+      }
+
+      // TODO: check if its already loaded, avoid share URL flickering and wait cursor
       this.isPhotoLoading = true
       this.resetZoom()
       this.$emit('photo-changed', this.currentPhotoIndex + 1)
@@ -295,7 +332,7 @@ export default {
         this.canZoom = false
 
         const item = e.target.parentNode
-        const newZoom = 1.6
+        const newZoom = 1.8
         item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + newZoom + ', ' + newZoom + ', ' + newZoom + ')'
       }
       e.stopPropagation()
@@ -367,7 +404,7 @@ export default {
         this.isZooming = true
       }
       if (this.isZooming) {
-        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(1.6, 1.6, 1.6)'
+        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(1.8, 1.8, 1.8)'
         setTimeout(function () {
           thisContext.transition = 'all .0s ease'
         }, 100)
@@ -379,12 +416,10 @@ export default {
      * Resets the zoom
      */
     resetZoom () {
-      this.scale = 1
       this.left = 0
       this.top = 0
       this.isZooming = false
       this.swipeType = null
-      this.transition = 'all .3s ease'
 
       if (this.currentPhotoIndex != null) {
         const item = this.$refs.photoContainer
@@ -429,19 +464,8 @@ export default {
      */
     onPhotoURLShare () {
       if (!this.isPhotoLoading) {
-        this.copyTextToClipboard(this.getImageURLSource)
+        copyTextToClipboard(this.getImageURLSource)
       }
-    },
-    /**
-     * Copies a text to the clipboard
-     */
-    copyTextToClipboard (text) {
-      const el = document.createElement('textarea')
-      el.value = text
-      document.body.appendChild(el)
-      el.select()
-      document.execCommand('copy')
-      document.body.removeChild(el)
     }
   },
   watch: {
@@ -523,6 +547,8 @@ export default {
 }
 
 .photo {
+  max-width: 100%;
+  max-height: 100%;
   margin: auto;
 }
 
@@ -558,6 +584,23 @@ export default {
 
 .description-container {
   bottom: 3vh;
+}
+
+.overlay-button-container {
+  z-index: 4;
+}
+
+.navigation-button {
+  position: absolute;
+  top: 50%;
+}
+
+.previous-button-container {
+  left: 30px;
+}
+
+.next-button-container {
+  right: 30px;
 }
 
 // Animations

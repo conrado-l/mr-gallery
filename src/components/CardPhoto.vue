@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container">
+  <div class="card-container" :title="hoverTitle">
     <img class="photo" :src="thumbnail"/>
   </div>
 </template>
@@ -11,6 +11,11 @@ export default {
     /** Photo thumbnail URL **/
     thumbnail: {
       type: String
+    },
+    /** Hover title **/
+    hoverTitle: {
+      type: String,
+      default: 'Click for more details'
     }
   }
 }
@@ -19,14 +24,14 @@ export default {
 <style lang="scss" scoped>
 
 .card-container {
-  width: 240px;
-  height: 240px;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 
 .photo {
-  width: 240px;
-  height: 240px;
+  //width: 240px;
+  //height: 240px;
 }
 
 </style>

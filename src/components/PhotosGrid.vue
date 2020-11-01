@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="d-flex justify-content-center align-items-center">
     <PhotosDetailViewer
       :photos="photos"
       :current-photo-index="currentOpenedPhotoIndex"
@@ -8,13 +8,9 @@
       @close="onViewerClose()"
       @photo-changed="onPhotoDetailChange($event)">
     </PhotosDetailViewer>
-    <!--      :loop="false"-->
-    <!--      effect="fade"-->
-    <!--      @close="currentOpenedPhotoIndex = null"-->
-    <!--      @on-change="onPhotoDetailChange($event)"-->
     <!-- Infinity scroll -->
     <div v-infinite-scroll="onInfiniteScrollLoadMore"
-         :infinite-scroll-distance="10">
+         :infinite-scroll-distance="5">
       <!-- Thumbnail photos -->
       <div class="grid-container">
         <CardPhoto
@@ -87,10 +83,6 @@ export default {
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
-      // if (this.fetchingPhotoDetails) {
-      //   return
-      // }
-
       this.currentOpenedPhotoIndex = photoIndex
 
       this.notifyPhotoDetail(this.photos[photoIndex].id)
@@ -127,18 +119,20 @@ export default {
 
 .grid-container {
   display: grid;
-  grid-template-columns: auto;
-  grid-gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 15px;
 }
 
-@media only screen and (max-height: $sm) {
+@media only screen and (max-width: $md) {
   .grid-container {
-    grid-template-columns: auto;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.grid-item {
-
+@media only screen and (max-width: $sm) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
 }
 
 </style>

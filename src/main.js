@@ -12,6 +12,7 @@ import App from './App.vue'
 
 // Styles
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
+import './assets/styles/styles.scss'
 
 Vue.config.productionTip = false
 
