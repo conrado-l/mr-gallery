@@ -8,12 +8,15 @@
         <div class="viewer-container">
           <div class="d-flex justify-content-center align-items-center w-100 h-100">
             <!-- Photo container -->
-            <div class="photo-container" ref="photoContainer">
+            <div class="photo-container"
+                 :class="{zoom: isZooming, loading: isPhotoLoading }"
+                 ref="photoContainer">
               <!-- Photo -->
               <img class="photo"
                    :src="getImageURLSource"
                    :key="getPhotoID"
                    draggable="false"
+                   @load="onPhotoLoad()"
                    @click="zoomPhoto()"
                    @mousemove="handleMouseMove($event)"
                    @mousedown="handleMouseDown($event)"
@@ -35,12 +38,19 @@
         </div>
         <!-- Close button -->
         <div class="close-button-container cursor-pointer"
-             :class="{zoom: isZooming, loading: isPhotoLoading }"
              title="Close viewer"
              @click="closeViewer()">
-          <img class="close-button"
+          <img class="overlay-action-button"
                src="../assets/images/icons/close.svg"
-               @load="onPhotoLoad()">
+               >
+        </div>
+        <!-- Share button -->
+        <div v-show="!isPhotoLoading"
+             class="share-button-container cursor-pointer"
+             title="Share photo URL"
+             @click="onPhotoURLShare()">
+          <img class="overlay-action-button"
+               src="../assets/images/icons/share.svg">
         </div>
       </div>
     </div>
@@ -103,6 +113,12 @@ export default {
       type: String,
       required: false,
       default: 'description'
+    },
+    /** Close the viewer if the backdrop is clicked **/
+    backdropClose: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   computed: {
@@ -148,6 +164,20 @@ export default {
      */
     getPhotoID () {
       return this.getPhotoField('id') || ''
+    },
+    /**
+     * Gets the photo's full size URL
+     * @returns {string}
+     */
+    getPhotoFullSizeURL () {
+      return this.getPhotoField(this.fullPhotoField) || ''
+    },
+    /**
+     * Gets the photo's full size URL
+     * @returns {string}
+     */
+    getPhotoThumbnailURL () {
+      return this.getPhotoField(this.thumbnailField) || ''
     }
   },
   methods: {
@@ -376,8 +406,42 @@ export default {
      * Sets the loading indicator when the photo is loaded
      */
     onPhotoLoad () {
-      debugger
-      this.isPhotoLoading = false
+      if (this.isFullPhotoURLSet()) {
+        this.isPhotoLoading = false
+      }
+    },
+    /**
+     * Checks if the full size photo is currently set as source
+    */
+    isFullPhotoURLSet () {
+      return !!this.getPhotoFullSizeURL
+    },
+    /**
+     * Closes the viewer when the backdrop is clicked
+     */
+    onBackdropClick () {
+      if (this.backdropClose) {
+        this.closeViewer()
+      }
+    },
+    /** Shares the full photo URL
+     * Closes the viewer when the backdrop is clicked
+     */
+    onPhotoURLShare () {
+      if (!this.isPhotoLoading) {
+        this.copyTextToClipboard(this.getImageURLSource)
+      }
+    },
+    /**
+     * Copies a text to the clipboard
+     */
+    copyTextToClipboard (text) {
+      const el = document.createElement('textarea')
+      el.value = text
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
     }
   },
   watch: {
@@ -459,19 +523,24 @@ export default {
 }
 
 .photo {
-  max-width: 100%;
-  max-height: 100%;
   margin: auto;
 }
 
-.close-button {
-  width: 30px;
-  height: 30px;
+.overlay-action-button {
+  width: 25px;
+  height: 25px;
 }
 
 .close-button-container {
   position: absolute;
   right: 15px;
+  top: 15px;
+  z-index: 4;
+}
+
+.share-button-container {
+  position: absolute;
+  right: 65px;
   top: 15px;
   z-index: 4;
 }
