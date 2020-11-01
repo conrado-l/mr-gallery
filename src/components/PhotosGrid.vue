@@ -8,20 +8,10 @@
       @close="onViewerClose()"
       @photo-changed="onPhotoDetailChange($event)">
     </PhotosDetailViewer>
-    <!-- Coolbox photo library -->
-    <!--    <CoolLightBox-->
-    <!--      :items="photos"-->
-    <!--      :index="currentOpenedPhotoIndex"-->
-    <!--      :useZoomBar="true"-->
-    <!--      :fullScreen="true"-->
     <!--      :loop="false"-->
-    <!--      :gallery="false"-->
     <!--      effect="fade"-->
     <!--      @close="currentOpenedPhotoIndex = null"-->
     <!--      @on-change="onPhotoDetailChange($event)"-->
-    <!--    >-->
-    <!--    </CoolLightBox>-->
-    <!---->
     <!-- Infinity scroll -->
     <div v-infinite-scroll="onInfiniteScrollLoadMore"
          :infinite-scroll-distance="10">
@@ -133,11 +123,18 @@ export default {
 
 <style lang="scss" scoped>
 @import "../assets/styles/helpers";
+@import "../assets/styles/breakpoints";
 
 .grid-container {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto;
   grid-gap: 20px;
+}
+
+@media only screen and (max-height: $sm) {
+  .grid-container {
+    grid-template-columns: auto;
+  }
 }
 
 .grid-item {

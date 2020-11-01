@@ -6,10 +6,19 @@
       <div class="outer-container">
         <!-- Viewer container -->
         <div class="viewer-container">
-          <!-- Photo container -->
-          <div class="photo-container">
-            <!-- Photo -->
-            <img class="photo" :src="getImageURLSource"/>
+          <div class="d-flex justify-content-center align-items-center w-100 h-100">
+            <!-- Photo container -->
+            <div class="photo-container" ref="photoContainer">
+              <!-- Photo -->
+              <img class="photo"
+                   :src="getImageURLSource"
+                   :key="getPhotoID"
+                   draggable="false"
+                   @click="zoomPhoto()"
+                   @mousemove="handleMouseMove($event)"
+                   @mousedown="handleMouseDown($event)"
+                   @mouseup="handleMouseUp($event)">
+            </div>
           </div>
           <!-- Footer -->
           <div class="footer">
@@ -24,6 +33,15 @@
             </div>
           </div>
         </div>
+        <!-- Close button -->
+        <div class="close-button-container cursor-pointer"
+             :class="{zoom: isZooming, loading: isPhotoLoading }"
+             title="Close viewer"
+             @click="closeViewer()">
+          <img class="close-button"
+               src="../assets/images/icons/close.svg"
+               @load="onPhotoLoad()">
+        </div>
       </div>
     </div>
   </transition>
@@ -33,7 +51,24 @@
 export default {
   name: 'PhotosDetailViewer',
   data: () => ({
-    visible: false
+    visible: false,
+    isPhotoLoading: true,
+    isZooming: false,
+    isDragging: false,
+    isSwipping: false,
+    isDraggingSwipe: false,
+    swipeType: null,
+    scale: 1,
+    top: 0,
+    left: 0,
+    lastX: 0,
+    lastY: 0,
+    canZoom: true,
+    transition: 'all .3s ease',
+    initialMouseX: 0,
+    initialMouseY: 0,
+    endMouseX: 0,
+    endMouseY: 0
   }),
   props: {
     /** Contains the photos to be displayed **/
@@ -106,6 +141,13 @@ export default {
      */
     getPhotoDescription () {
       return this.getPhotoField(this.descriptionField) || ''
+    },
+    /**
+     * Gets the photo's id
+     * @returns {string}
+     */
+    getPhotoID () {
+      return this.getPhotoField('id') || ''
     }
   },
   methods: {
@@ -120,13 +162,15 @@ export default {
      * Notifies when the viewer is closed
      */
     closeViewer () {
-      this.visible = false
+      this.resetViewerSettings()
       this.$emit('close', this.currentPhotoIndex)
     },
     /**
      * Next photo
      */
     nextPhoto () {
+      this.isPhotoLoading = true
+      this.resetZoom()
       this.$emit('photo-changed', this.currentPhotoIndex + 1)
     },
     /**
@@ -137,6 +181,8 @@ export default {
 
       // Check if the new photo is valid
       if (newCurrentPhotoIndex >= 0) {
+        this.isPhotoLoading = true
+        this.resetZoom()
         this.$emit('photo-changed', newCurrentPhotoIndex)
       }
     },
@@ -202,6 +248,136 @@ export default {
       }
 
       return photoField
+    },
+    /**
+     * Handles the mouse move event
+     */
+    handleMouseMove (e) {
+      if (!this.checkMouseEventPropButton(e.button)) {
+        return
+      }
+
+      if (this.isDraging) {
+        this.top = this.top - this.lastY + e.clientY
+        this.left = this.left - this.lastX + e.clientX
+        this.lastX = e.clientX
+        this.lastY = e.clientY
+        this.canZoom = false
+
+        const item = e.target.parentNode
+        const newZoom = 1.6
+        item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + newZoom + ', ' + newZoom + ', ' + newZoom + ')'
+      }
+      e.stopPropagation()
+    },
+    /**
+     * Handles the mouse down event
+     */
+    handleMouseDown (e) {
+      if (!this.checkMouseEventPropButton(e.button)) {
+        return
+      }
+
+      this.lastX = e.clientX
+      this.lastY = e.clientY
+      this.isDraging = true
+      e.stopPropagation()
+    },
+    /**
+     * Handles the mouse up event
+     */
+    handleMouseUp (e) {
+      if (!this.checkMouseEventPropButton(e.button)) {
+        return
+      }
+
+      this.isDraging = false
+
+      this.lastX = 0
+      this.lastY = 0
+
+      const thisContext = this
+      setTimeout(function () {
+        thisContext.canZoom = true
+      }, 100)
+    },
+    /**
+     * Checks if it's allowed to drag
+     */
+    checkMouseEventPropButton (button) {
+      if (!this.isZooming) {
+        return false
+      }
+
+      return button === 0
+    },
+
+    /**
+     * Zooms on the photo
+     */
+    zoomPhoto () {
+      if (!this.canZoom) {
+        return false
+      }
+
+      if (this.isSwipping) {
+        return false
+      }
+
+      const item = this.$refs.photoContainer
+
+      const isZooming = this.isZooming
+      const thisContext = this
+
+      if (isZooming) {
+        if (!this.isDraging) {
+          this.isZooming = false
+        }
+      } else {
+        this.isZooming = true
+      }
+      if (this.isZooming) {
+        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(1.6, 1.6, 1.6)'
+        setTimeout(function () {
+          thisContext.transition = 'all .0s ease'
+        }, 100)
+      } else {
+        this.resetZoom()
+      }
+    },
+    /**
+     * Resets the zoom
+     */
+    resetZoom () {
+      this.scale = 1
+      this.left = 0
+      this.top = 0
+      this.isZooming = false
+      this.swipeType = null
+      this.transition = 'all .3s ease'
+
+      if (this.currentPhotoIndex != null) {
+        const item = this.$refs.photoContainer
+
+        item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(1, 1, 1)'
+        this.initialMouseX = 0
+      }
+    },
+    /**
+     * Resets the viewer settings to default
+     */
+    resetViewerSettings () {
+      this.visible = false
+      this.resetZoom()
+      this.isDragging = false
+      this.isPhotoLoading = true
+    },
+    /**
+     * Sets the loading indicator when the photo is loaded
+     */
+    onPhotoLoad () {
+      debugger
+      this.isPhotoLoading = false
     }
   },
   watch: {
@@ -265,27 +441,54 @@ export default {
 }
 
 .photo-container {
-  //box-shadow: 0 0 1.5rem rgba(0, 0, 0, .45)
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(calc(-50% + 0px), calc(-50% + 0px), 0px) scale3d(1, 1, 1);
+  cursor: zoom-in;
+  box-shadow: 0 0 1.5rem rgba(0, 0, 0, .45);
+  z-index: 5;
+
+  &.zoomed {
+    cursor: zoom-out;
+  }
+
+  &.loading {
+    cursor: wait;
+  }
 }
 
 .photo {
   max-width: 100%;
   max-height: 100%;
+  margin: auto;
+}
+
+.close-button {
+  width: 30px;
+  height: 30px;
+}
+
+.close-button-container {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  z-index: 4;
 }
 
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 50px;
+  padding: 20px;
 }
 
 .title-container {
-  bottom: 40px;
+  bottom: 5vh;
 }
 
 .description-container {
-  bottom: 20px;
+  bottom: 3vh;
 }
 
 // Animations
