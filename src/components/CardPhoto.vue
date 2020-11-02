@@ -12,7 +12,8 @@
           <!-- Placeholder -->
           <div v-else
                :key="thumbnail"
-               class="photo-placeholder">
+               class="photo-placeholder"
+               data-test="thumbnail-photo">
           </div>
         </transition-group>
   </div>

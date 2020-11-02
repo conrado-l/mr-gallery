@@ -106,7 +106,10 @@ describe('PhotosGrid.vue', () => {
     // Find the thumbnail photos
     const thumbnailPhotoWrappers = wrapper.findAll(selectors.thumbnailPhoto)
 
-    // Check if the thumbnail photos sources are correct (VImg uses the "background-image" CSS property)
+    // Wait for the next tick
+    await wrapper.vm.$nextTick()
+
+    // Check if the thumbnail photos sources are correct
     thumbnailPhotoWrappers.wrappers.forEach((thumbnailPhoto, index) => {
       expect(thumbnailPhoto.element.src).toBe(photosMock[index].thumbnailPhoto)
     })
