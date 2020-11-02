@@ -20,7 +20,7 @@
                  ref="photoContainer">
               <!-- Photo -->
               <transition name="slow-fade">
-                <img v-show="getPhotoShow"
+                <img v-show="getShowPhoto"
                      class="photo"
                      draggable="false"
                      data-test="main-photo"
@@ -36,8 +36,10 @@
                      @mousedown="handleMouseDown"
                      @mouseup="handleMouseUp">
               </transition>
-              <Spinner v-show="isPhotoLoading"
-                       class="photo-spinner"></Spinner>
+              <transition name="fade">
+                <Spinner v-show="isPhotoLoading"
+                         class="photo-spinner"></Spinner>
+              </transition>
             </div>
           </div>
           <!-- Footer -->
@@ -192,6 +194,11 @@ export default {
     fetchingPhotos: {
       type: Boolean,
       required: false
+    },
+    /** Use thumbnail photo as placeholder **/
+    useThumbnail: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -206,16 +213,18 @@ export default {
       if (fullPhotoSrc) {
         return fullPhotoSrc
       } else {
+        if (!this.useThumbnail) {
+          return ''
+        }
+
         const thumbnailSrc = this.getPhotoThumbnailURL
 
         // Thumbnail fallback, shown when the full size one could not be fetched
         if (thumbnailSrc) {
           return thumbnailSrc
-        } else if (!this.fetchingPhotos) {
+        } else {
           // Placeholder fallback, shown when the next new/unknown photo could not be fetched (API/connectivity error)
           return require('@/assets/images/image-not-found.webp')
-        } else {
-          return null
         }
       }
     },
@@ -255,11 +264,12 @@ export default {
       return this.getPhotoField(this.thumbnailField) || ''
     },
     /**
-     * Checks if the photo should be visible
+     * Checks if the photo should be shown
      * @returns {boolean}
      */
-    getPhotoShow () {
-      return (this.getImageURLSource && !this.fetchingPhotos)
+    getShowPhoto () {
+      return ((this.useThumbnail && this.getPhotoThumbnailURL) ||
+        (!this.useThumbnail && this.getPhotoFullSizeURL && !this.isPhotoLoading))
     },
     /**
      * Checks if the first photo is being displayed
