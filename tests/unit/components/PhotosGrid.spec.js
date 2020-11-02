@@ -1,9 +1,6 @@
 // Vue Test Utils
 import { createLocalVue, mount } from '@vue/test-utils'
 
-// Plugins
-import Vuetify from 'vuetify'
-
 // Components
 import PhotosGrid from '@/components/PhotosGrid'
 
@@ -12,7 +9,6 @@ import photosMock from './mocks/photos'
 
 describe('PhotosGrid.vue', () => {
   const localVue = createLocalVue()
-  let vuetify
 
   // Default props
   const defaultProps = {
@@ -23,23 +19,19 @@ describe('PhotosGrid.vue', () => {
 
   // Used selectors
   const selectors = {
-    thumbnailPhoto: '.v-image__image.v-image__image--cover'
+    thumbnailPhoto: '[data-test="thumbnail-photo"]',
+    viewer: '[data-test="viewer-container"]'
   }
 
   // Reusable factory mount
   const factoryMount = (props) => {
     return mount(PhotosGrid, {
       localVue,
-      vuetify,
       propsData: {
         ...props
       }
     })
   }
-
-  beforeEach(() => {
-    vuetify = new Vuetify()
-  })
 
   it('should render the component correctly', () => {
     const wrapper = factoryMount(defaultProps)
@@ -74,7 +66,7 @@ describe('PhotosGrid.vue', () => {
     await wrapper.vm.$nextTick()
 
     // Find the thumbnail photos
-    const thumbnailPhotoWrappers = wrapper.findAll(selectors.thumbnailPhoto)
+    const thumbnailPhotoWrappers = wrapper.findAll('[data-test="thumbnail-photo"]')
 
     // Check if 10 thumbnail photos were rendered
     expect(thumbnailPhotoWrappers.length).toEqual(10)
@@ -101,10 +93,7 @@ describe('PhotosGrid.vue', () => {
     expect(wrapper.emitted('load-more-photos')).toBeTruthy()
   })
 
-  // TODO: do (more) research on why Vuetify's "VImg" component shows in the preload status in tests, even after using $nextTick,
-  //  having the "src" unset, making the test fail.
-  //  NOTE: The test runs properly when :lazy-src="photo.thumb" is set to the "v-img" component inside PhotosGrid.vue
-  it.skip('should render the thumbnail photos with the correct source URLs', async () => {
+  it('should render the thumbnail photos with the correct source URLs', async () => {
     // Instantiate the component
     const wrapper = factoryMount({
       ...defaultProps,
@@ -119,7 +108,7 @@ describe('PhotosGrid.vue', () => {
 
     // Check if the thumbnail photos sources are correct (VImg uses the "background-image" CSS property)
     thumbnailPhotoWrappers.wrappers.forEach((thumbnailPhoto, index) => {
-      expect(thumbnailPhoto.element.style.backgroundImage).toBe(`url(${photosMock[index].src})`)
+      expect(thumbnailPhoto.element.src).toBe(photosMock[index].thumbnailPhoto)
     })
   })
 
@@ -140,7 +129,7 @@ describe('PhotosGrid.vue', () => {
     await thumbnailPhotoWrapper.trigger('click')
 
     // Check if the modal is visible
-    expect(wrapper.find('.cool-lightbox__slide.cool-lightbox__slide--current').exists()).toBe(true)
+    expect(wrapper.find('.viewer-container').exists()).toBe(true)
   })
 
   it('should notify to load the next photo detail after clicking the next arrow on the detail modal', async () => {

@@ -5,8 +5,10 @@
       <!-- Outer container -->
       <div class="outer-container">
         <!-- Viewer container -->
-        <div class="viewer-container">
+        <div class="viewer-container"
+             data-test="viewer-container">
           <div class="d-flex-center w-100 h-100"
+               data-test="overlay-backdrop"
                @click.self="onBackdropClick"
                @touchstart="handleTouchStart"
                @touchend="handleTouchEnd">
@@ -16,9 +18,10 @@
                  ref="photoContainer">
               <!-- Photo -->
               <img class="photo"
+                   draggable="false"
+                   data-test="main-photo"
                    :src="getImageURLSource"
                    :key="getPhotoID"
-                   draggable="false"
                    :title="getPhotoHoverTooltip"
                    @load="onPhotoLoad()"
                    @click="zoomPhoto()"
@@ -49,6 +52,7 @@
         <!-- Close button -->
         <div class="close-button-container cursor-pointer"
              title="Close viewer"
+             data-test="close-viewer-button"
              @click="closeViewer()">
           <img class="overlay-action-button"
                src="@/assets/images/icons/close.svg"
@@ -59,6 +63,7 @@
           <div v-show="!isZooming"
                class="share-button-container cursor-pointer"
                title="Share photo URL"
+               data-test="share-url-button"
                @click="onPhotoURLShare()">
             <img class="overlay-action-button"
                  src="@/assets/images/icons/share.svg">
@@ -71,8 +76,9 @@
           <div v-show="!isFirstPhoto && !isZooming"
               class="previous-button-container overlay-button navigation-button cursor-pointer"
               @click="previousPhoto()"
-              title="Previous photo">
-            <img src="@/assets/images/icons/left-arrow.svg"
+              title="Previous photo"
+              data-test="previous-photo-button">
+          <img src="@/assets/images/icons/left-arrow.svg"
                  class="overlay-action-button">
           </div>
         </transition>
@@ -82,7 +88,9 @@
           <div v-show="!isLastPhoto && !isZooming"
               class="next-button-container overlay-button navigation-button cursor-pointer"
               @click="nextPhoto()"
-              title="Next photo">
+              title="Next photo"
+              data-test="next-photo-button"
+          >
             <img src="@/assets/images/icons/right-arrow.svg"
                  class="overlay-action-button">
           </div>
@@ -325,6 +333,7 @@ export default {
      * Register the key shortcuts
      */
     shortcutEventListener (event) {
+      debugger
       switch (event.keyCode) {
         // Right arrow
         case 39:
@@ -548,6 +557,7 @@ export default {
      * Shares the full photo URL
      */
     onPhotoURLShare () {
+      debugger
       if (!this.isPhotoLoading) {
         copyTextToClipboard(this.getImageURLSource)
         this.$toast.default('The photo\'s URL was copied to the clipboard')
@@ -560,17 +570,20 @@ export default {
      * @param {number} newValue
      * @param {number} oldValue
      */
-    currentPhotoIndex (newValue, oldValue) {
-      // TODO: find way to avoid retriggering in a loop
-      if (newValue === oldValue) {
-        return
+    currentPhotoIndex: {
+      immediate: true,
+      handler (newValue, oldValue) {
+        // TODO: find way to avoid retriggering in a loop
+        if (newValue === oldValue) {
+          return
+        }
+
+        // Show/hide the viewer
+        this.visible = newValue != null
+
+        // Enable/disable scrolling
+        this.setScrolling()
       }
-
-      // Show/hide the viewer
-      this.visible = newValue != null
-
-      // Enable/disable scrolling
-      this.setScrolling()
     }
   },
   mounted () {

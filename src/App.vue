@@ -3,7 +3,7 @@
     <Navigation></Navigation>
         <router-view v-if="getIsUserAuthenticated"></router-view>
         <div v-else-if="!errorAuthenticating">
-          <div class="d-flex-center">
+          <div class="spinner-container d-flex-center">
               <Spinner></Spinner>
           </div>
         </div>
@@ -45,9 +45,7 @@ export default {
 <style lang="scss" scoped>
 @import "assets/styles/helpers";
 
-.spinner-message-container {
-  display: flex;
-  justify-content: space-around;
-  align-content: center;
+.spinner-container {
+  margin-top: 40px;
 }
 </style>

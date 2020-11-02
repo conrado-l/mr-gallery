@@ -1,6 +1,8 @@
 <template>
   <div class="card-container" :title="hoverTitle">
-    <img class="photo" :src="thumbnail"/>
+    <img class="photo"
+         :src="thumbnail"
+         data-test="thumbnail-photo"/>
   </div>
 </template>
 

@@ -20,7 +20,6 @@
           v-for="(photo, photoIndex) in photos"
           :key="photo.id"
           :thumbnail="photo.thumbnailPhoto"
-          data-test="thumbnail-photo"
           @click.native="onPhotoClick(photoIndex, photo.id)">
         </CardPhoto>
         <!---->
