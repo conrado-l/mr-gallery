@@ -27,9 +27,9 @@
                    :title="getPhotoHoverTooltip"
                    @load="onPhotoLoad()"
                    @click="zoomPhoto()"
-                   @touchstart="handleMouseDown($event)"
-                   @touchmove="handleMouseMove($event)"
-                   @touchend="handleMouseUp($event)"
+                   @touchstart="handleMouseDown"
+                   @touchmove="handleMouseMove"
+                   @touchend="handleMouseUp"
                    @mousemove="handleMouseMove"
                    @mousedown="handleMouseDown"
                    @mouseup="handleMouseUp">

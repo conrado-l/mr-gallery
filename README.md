@@ -7,6 +7,7 @@ more details and the full size image. `Infinity scroll is implemented`, so you j
 
 Disclaimer:
 - I used almost no CSS nested selectors for keeping the [specificity](https://developer.mozilla.org/en/docs/Web/CSS/Specificity#:~:text=Specificity%20is%20the%20means%20by,different%20sorts%20of%20CSS%20selectors.) low. I thought of using [BEM](http://getbem.com/) but I didn't know if you guys liked it, since I didn't see it on the current MR website.
+- Zooming is disabled on mobile, since its natively done by using the pinch gesture.
 
 Thanks for your time, and have an amazing day!
 
