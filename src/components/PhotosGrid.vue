@@ -2,6 +2,7 @@
   <div class="d-flex-center">
     <PhotosDetailViewer
       :photos="photos"
+      :fetching-photos="fetchingPhotos || fetchingPhotoDetails"
       :current-photo-index="currentOpenedPhotoIndex"
       :zoom-level="2"
       :backdrop-close="true"
@@ -85,9 +86,16 @@ export default {
      * @param {number} photoIndex
      **/
     onPhotoDetailChange (photoIndex) {
-      this.currentOpenedPhotoIndex = photoIndex
+      const isNewPhoto = photoIndex > this.photos.length - 1
 
-      this.notifyPhotoDetail(this.photos[photoIndex].id)
+      // Load more photos if we got to the last one in the viewer
+      if (isNewPhoto) {
+        this.notifyPhotoDetail(null)
+      } else {
+        this.notifyPhotoDetail(this.photos[photoIndex].id)
+      }
+
+      this.currentOpenedPhotoIndex = photoIndex
     },
     /**
      * Notifies that a photo was clicked, it also opens the detail modal for showing the photo in full size

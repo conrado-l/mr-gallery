@@ -19,7 +19,8 @@
                  data-test="photo-container"
                  ref="photoContainer">
               <!-- Photo -->
-              <img class="photo"
+              <img v-show="getPhotoShow"
+                   class="photo"
                    draggable="false"
                    data-test="main-photo"
                    :src="getImageURLSource"
@@ -89,7 +90,7 @@
 
         <!-- Next photo -->
         <transition name="fade">
-          <div v-show="!isLastPhoto && !isZooming"
+          <div v-show="!isZooming"
               class="next-button-container overlay-button navigation-button cursor-pointer"
               @click="nextPhoto()"
               title="Next photo"
@@ -184,6 +185,11 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    /** Indicates if the photos are being fetched **/
+    fetchingPhotos: {
+      type: Boolean,
+      required: false
     }
   },
   computed: {
@@ -203,9 +209,11 @@ export default {
         // Thumbnail fallback
         if (thumbnailSrc) {
           return thumbnailSrc
-        } else {
+        } else if (!this.fetchingPhotos) {
           // Placeholder fallback if the full photo and thumbnail failed
           return require('@/assets/images/image-not-found.webp')
+        } else {
+          return null
         }
       }
     },
@@ -245,6 +253,13 @@ export default {
       return this.getPhotoField(this.thumbnailField) || ''
     },
     /**
+     * Checks if the photo should be visible
+     * @returns {boolean}
+     */
+    getPhotoShow () {
+      return (this.getImageURLSource && !this.fetchingPhotos)
+    },
+    /**
      * Checks if the first photo is being displayed
      */
     isFirstPhoto () {
@@ -282,7 +297,7 @@ export default {
      * Navigates to the next photo
      */
     nextPhoto () {
-      if (this.isLastPhoto) {
+      if (this.fetchingPhotos) {
         return
       }
 

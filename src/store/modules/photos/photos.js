@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 // Mutations
 import types from './photos.mutations'
 import commonTypes from '@/store/common/common.mutation'
@@ -47,7 +49,7 @@ const getters = {
    * @returns {boolean}
    */
   getIsPhotoDetailsLoaded: state => photoId => {
-    return state.photos.some(photo => (photo.id === photoId) && photo.full_picture)
+    return state.photos.some(photo => (photo.id === photoId) && photo.detailLoaded)
   },
   /**
    * Gets the current page
@@ -72,6 +74,14 @@ const getters = {
    */
   getIsFetchingPhotoDetails: state => {
     return state.fetchingPhotoDetail
+  },
+  /**
+   * Gets the amount of photos
+   * @param state
+   * @returns {number}
+   */
+  getPhotosAmount: state => {
+    return state.photos.length
   }
 }
 
@@ -107,14 +117,8 @@ const mutations = {
    * @param {object} photoDetails
    */
   [types.SET_PHOTO_DETAILS] (state, photoDetails) {
-    state.photos = state.photos.map(photo => {
-      // Update the photo with the actual details
-      if (photo.id === photoDetails.id) {
-        return { ...photoDetails, detailLoaded: true }
-      } else {
-        return photo
-      }
-    })
+    const photoIndex = state.photos.findIndex(photo => photo.id === photoDetails.id)
+    Vue.set(state.photos, photoIndex, { ...photoDetails, detailLoaded: true })
   },
   /**
    * Sets the fetching status for the photos

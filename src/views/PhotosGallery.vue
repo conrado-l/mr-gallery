@@ -24,6 +24,7 @@ export default {
   computed: {
     ...mapGetters('photos', [
       'getPhotos',
+      'getPhotosAmount',
       'getIsFetchingPhotos',
       'getIsFetchingPhotoDetails',
       'getIsPhotoDetailsLoaded'
@@ -32,6 +33,7 @@ export default {
   methods: {
     /**
      * Fetches the thumbnail photos
+     * @return {promise}
      /**/
     fetchThumbnailPhotos () {
       // Prevent multiple calls if there is a fetch in progress
@@ -39,7 +41,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('photos/fetchPhotos')
+      return this.$store.dispatch('photos/fetchPhotos')
         .catch(() => {
           this.$toast.error('An error has occurred while fetching the photos')
         })
@@ -55,9 +57,32 @@ export default {
         return
       }
 
-      this.$store.dispatch('photos/fetchPhotoDetail', photoId)
-        .catch(() => {
-          this.$toast.error('An error has occurred while fetching the photo detail')
+      // Fetch a photo's details
+      if (photoId) {
+        this.$store.dispatch('photos/fetchPhotoDetail', photoId)
+          .catch(() => {
+            this.$toast.error('An error has occurred while fetching the photo detail')
+          })
+      } else {
+        // No ID was provided, so a new/unknown photo is requested
+        this.fetchMorePhotosWithDetail()
+      }
+    },
+    /***
+     * Fetches more photos and the details for the first new one
+     */
+    fetchMorePhotosWithDetail () {
+      const currentPhotosAmount = this.getPhotosAmount
+
+      this.fetchThumbnailPhotos()
+        .then(() => {
+          const newPhotosAmount = this.getPhotosAmount
+
+          // If there are new photos, fetch the details from the first new one
+          if (newPhotosAmount > currentPhotosAmount) {
+            const photoId = this.getPhotos[currentPhotosAmount].id
+            this.fetchPhotoDetail(photoId)
+          }
         })
     }
   }
