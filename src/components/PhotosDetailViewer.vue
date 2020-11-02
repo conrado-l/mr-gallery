@@ -19,21 +19,23 @@
                  data-test="photo-container"
                  ref="photoContainer">
               <!-- Photo -->
-              <img v-show="getPhotoShow"
-                   class="photo"
-                   draggable="false"
-                   data-test="main-photo"
-                   :src="getImageURLSource"
-                   :key="getPhotoID"
-                   :title="getPhotoHoverTooltip"
-                   @load="onPhotoLoad()"
-                   @click="zoomPhoto()"
-                   @touchstart="handleMouseDown"
-                   @touchmove="handleMouseMove"
-                   @touchend="handleMouseUp"
-                   @mousemove="handleMouseMove"
-                   @mousedown="handleMouseDown"
-                   @mouseup="handleMouseUp">
+              <transition name="slow-fade">
+                <img v-show="getPhotoShow"
+                     class="photo"
+                     draggable="false"
+                     data-test="main-photo"
+                     :src="getImageURLSource"
+                     :key="getPhotoID"
+                     :title="getPhotoHoverTooltip"
+                     @load="onPhotoLoad()"
+                     @click="zoomPhoto()"
+                     @touchstart="handleMouseDown"
+                     @touchmove="handleMouseMove"
+                     @touchend="handleMouseUp"
+                     @mousemove="handleMouseMove"
+                     @mousedown="handleMouseDown"
+                     @mouseup="handleMouseUp">
+              </transition>
               <Spinner v-show="isPhotoLoading"
                        class="photo-spinner"></Spinner>
             </div>
@@ -198,19 +200,19 @@ export default {
      * @returns {string}
      */
     getImageURLSource () {
-      const fullPhotoSrc = this.getPhotoField(this.fullPhotoField)
+      const fullPhotoSrc = this.getPhotoFullSizeURL
 
       // Full photo is available
       if (fullPhotoSrc) {
         return fullPhotoSrc
       } else {
-        const thumbnailSrc = this.getPhotoField(this.thumbnailField)
+        const thumbnailSrc = this.getPhotoThumbnailURL
 
-        // Thumbnail fallback
+        // Thumbnail fallback, shown when the full size one could not be fetched
         if (thumbnailSrc) {
           return thumbnailSrc
         } else if (!this.fetchingPhotos) {
-          // Placeholder fallback if the full photo and thumbnail failed
+          // Placeholder fallback, shown when the next new/unknown photo could not be fetched (API/connectivity error)
           return require('@/assets/images/image-not-found.webp')
         } else {
           return null
@@ -813,11 +815,19 @@ export default {
   left: calc(50% - 16px);// Subtracting the spinner size / 2
 }
 
-// Animations
+// Transitions
 .fade-enter-active, .fade-leave-active {
   transition: opacity .3s;
 }
 .fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.slow-fade-enter-active, .slow-fade-leave-active {
+  transition: opacity .6s;
+}
+
+.slow-fade-enter, .slow-fade-leave-to {
   opacity: 0;
 }
 
