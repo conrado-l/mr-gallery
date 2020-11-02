@@ -49,17 +49,17 @@
              title="Close viewer"
              @click="closeViewer()">
           <img class="overlay-action-button"
-               src="../assets/images/icons/close.svg"
+               src="@/assets/images/icons/close.svg"
                >
         </div>
         <!-- Share button -->
         <transition name="fade">
-          <div v-show="!isPhotoLoading && !isZooming"
+          <div v-show="!isZooming"
                class="share-button-container cursor-pointer"
                title="Share photo URL"
                @click="onPhotoURLShare()">
             <img class="overlay-action-button"
-                 src="../assets/images/icons/share.svg">
+                 src="@/assets/images/icons/share.svg">
           </div>
         </transition>
 
@@ -70,7 +70,7 @@
               class="previous-button-container overlay-button navigation-button cursor-pointer"
               @click="previousPhoto()"
               title="Previous photo">
-            <img src="../assets/images/icons/left-arrow.svg"
+            <img src="@/assets/images/icons/left-arrow.svg"
                  class="overlay-action-button">
           </div>
         </transition>
@@ -81,7 +81,7 @@
               class="next-button-container overlay-button navigation-button cursor-pointer"
               @click="nextPhoto()"
               title="Next photo">
-            <img src="../assets/images/icons/right-arrow.svg"
+            <img src="@/assets/images/icons/right-arrow.svg"
                  class="overlay-action-button">
           </div>
         </transition>
@@ -245,27 +245,26 @@ export default {
       return (!!(this.photos && Array.isArray(this.photos) && this.photos.length))
     },
     /**
-     * Notifies when the viewer is closed
+     * Notifies when the viewer is closed and resets the settings
      */
     closeViewer () {
       this.resetViewerSettings()
       this.$emit('close', this.currentPhotoIndex)
     },
     /**
-     * Next photo
+     * Navigates to the next photo
      */
     nextPhoto () {
       if (this.isLastPhoto) {
         return
       }
 
-      // TODO: check if its already loaded, avoid share URL flickering and wait cursor
       this.isPhotoLoading = true
       this.resetZoom()
       this.$emit('photo-changed', this.currentPhotoIndex + 1)
     },
     /**
-     * Previous photo
+     * Navigates to the previous photo
      */
     previousPhoto () {
       const newCurrentPhotoIndex = this.currentPhotoIndex - 1
@@ -288,7 +287,7 @@ export default {
       }
     },
     /**
-     * Disables scrolling
+     * Disables scrolling, necessary for navigating with the arrow keys
      */
     disableScrolling () {
       document.body.setAttribute('style', 'overflow:hidden;')
@@ -428,10 +427,10 @@ export default {
       if (ratioX > ratioY) {
         if (diffX >= 0) {
           // Right swipe
-          this.nextPhoto()
+          this.previousPhoto()
         } else {
           // Left swipe
-          this.previousPhoto()
+          this.nextPhoto()
         }
       }
     },
@@ -513,6 +512,7 @@ export default {
     onPhotoURLShare () {
       if (!this.isPhotoLoading) {
         copyTextToClipboard(this.getImageURLSource)
+        this.$toast.default('The photo URL was copied to the clipboard')
       }
     }
   },
@@ -625,7 +625,7 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 20px;
+  padding-bottom: 3vh;
 }
 
 .overlay-button {
@@ -661,6 +661,10 @@ export default {
 
   .photo {
     max-width: 100vw;
+  }
+
+  .footer {
+    padding-bottom: 10vh;
   }
 }
 
