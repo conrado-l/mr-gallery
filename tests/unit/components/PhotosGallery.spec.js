@@ -4,9 +4,6 @@ import { createLocalVue, mount } from '@vue/test-utils'
 // Vuex
 import { Store } from 'vuex-mock-store'
 
-// Plugins
-import Vuetify from 'vuetify'
-
 // Components
 import PhotosGallery from '@/views/PhotosGallery'
 
@@ -20,7 +17,6 @@ describe('PhotosGallery.vue', () => {
   const factoryMount = () => {
     return mount(PhotosGallery, {
       localVue,
-      vuetify,
       mocks: {
         $store: store
       }
@@ -28,7 +24,6 @@ describe('PhotosGallery.vue', () => {
   }
 
   beforeEach(() => {
-    vuetify = new Vuetify()
 
     store = new Store({
       state: {

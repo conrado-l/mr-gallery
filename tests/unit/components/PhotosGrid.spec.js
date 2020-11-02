@@ -66,7 +66,7 @@ describe('PhotosGrid.vue', () => {
     await wrapper.vm.$nextTick()
 
     // Find the thumbnail photos
-    const thumbnailPhotoWrappers = wrapper.findAll('[data-test="thumbnail-photo"]')
+    const thumbnailPhotoWrappers = wrapper.findAll(selectors.thumbnailPhoto)
 
     // Check if 10 thumbnail photos were rendered
     expect(thumbnailPhotoWrappers.length).toEqual(10)
@@ -129,30 +129,7 @@ describe('PhotosGrid.vue', () => {
     await thumbnailPhotoWrapper.trigger('click')
 
     // Check if the modal is visible
-    expect(wrapper.find('.viewer-container').exists()).toBe(true)
-  })
-
-  it('should notify to load the next photo detail after clicking the next arrow on the detail modal', async () => {
-    // Instantiate the component
-    const wrapper = factoryMount({
-      ...defaultProps,
-      photos: photosMock
-    })
-
-    // Find the thumbnail photo
-    const thumbnailPhotoWrapper = wrapper.find(selectors.thumbnailPhoto)
-
-    // Click over the photo
-    await thumbnailPhotoWrapper.trigger('click')
-
-    // Find the next button
-    const nextButtonWrapper = wrapper.find('.cool-lightbox-button.cool-lightbox-button--next')
-
-    // Click on the button
-    await nextButtonWrapper.trigger('click')
-
-    // Check that the event was emitted
-    expect(wrapper.emitted('load-photo-detail')).toBeTruthy()
+    expect(wrapper.find(selectors.viewer).exists()).toBe(true)
   })
 
   it('should notify to load the photo detail when clicking on a photo from the grid', async () => {

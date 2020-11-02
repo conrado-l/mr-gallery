@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center">
+  <div class="d-flex-center">
     <PhotosDetailViewer
       :photos="photos"
       :current-photo-index="currentOpenedPhotoIndex"

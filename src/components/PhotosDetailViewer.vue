@@ -424,6 +424,7 @@ export default {
     },
     /**
      * Checks if it's allowed to drag
+     * @return {boolean}
      */
     checkMouseEventPropButton (button) {
       if (!this.isZooming) {
@@ -572,7 +573,6 @@ export default {
     currentPhotoIndex: {
       immediate: true,
       handler (newValue, oldValue) {
-        // TODO: find way to avoid retriggering in a loop
         if (newValue === oldValue) {
           return
         }
@@ -585,10 +585,12 @@ export default {
       }
     }
   },
+  /** Mounted life-cycle hook **/
   mounted () {
     // Register the keydown event listener for key shortcuts
     window.addEventListener('keydown', this.shortcutEventListener)
   },
+  /** Before destroy life-cycle hook **/
   beforeDestroy () {
     // Remove the keydown event listener for key shortcuts
     window.removeEventListener('keydown', this.shortcutEventListener)

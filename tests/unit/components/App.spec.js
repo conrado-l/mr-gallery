@@ -4,9 +4,6 @@ import { createLocalVue, mount } from '@vue/test-utils'
 // Vuex
 import { Store } from 'vuex-mock-store'
 
-// Plugins
-import Vuetify from 'vuetify'
-
 // Components
 import App from '@/App'
 
@@ -20,7 +17,6 @@ describe('App.vue', () => {
   const factoryMount = () => {
     return mount(App, {
       localVue,
-      vuetify,
       stubs: ['router-view'],
       mocks: {
         $store: store,
@@ -32,7 +28,6 @@ describe('App.vue', () => {
   }
 
   beforeEach(() => {
-    vuetify = new Vuetify()
 
     store = new Store({
       state: {

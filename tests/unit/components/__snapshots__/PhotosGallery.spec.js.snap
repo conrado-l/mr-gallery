@@ -2,42 +2,20 @@
 
 exports[`PhotosGallery.vue should render the component correctly 1`] = `
 <div
-  class="container"
+  class="photos-gallery-container"
 >
-  <div>
+  <div
+    class="d-flex-center"
+  >
     <transition-stub
-      name="cool-lightbox-modal"
+      name="fade"
     >
       <!---->
     </transition-stub>
      
-    <div
-      infinite-scroll-distance="10"
-    >
+    <div>
       <div
-        class="row"
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`PhotosGrid.vue should render the component correctly 1`] = `
-<div
-  class="container"
->
-  <div>
-    <transition-stub
-      name="cool-lightbox-modal"
-    >
-      <!---->
-    </transition-stub>
-     
-    <div
-      infinite-scroll-distance="10"
-    >
-      <div
-        class="row"
+        class="grid-container"
       />
     </div>
   </div>
