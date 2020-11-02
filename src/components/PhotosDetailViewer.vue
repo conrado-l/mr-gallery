@@ -15,6 +15,7 @@
             <!-- Photo container -->
             <div class="photo-container"
                  :class="{zooming: isZooming, loading: isPhotoLoading }"
+                 data-test="photo-container"
                  ref="photoContainer">
               <!-- Photo -->
               <img class="photo"
@@ -333,7 +334,6 @@ export default {
      * Register the key shortcuts
      */
     shortcutEventListener (event) {
-      debugger
       switch (event.keyCode) {
         // Right arrow
         case 39:
@@ -557,7 +557,6 @@ export default {
      * Shares the full photo URL
      */
     onPhotoURLShare () {
-      debugger
       if (!this.isPhotoLoading) {
         copyTextToClipboard(this.getImageURLSource)
         this.$toast.default('The photo\'s URL was copied to the clipboard')
