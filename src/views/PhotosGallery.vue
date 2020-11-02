@@ -1,12 +1,10 @@
 <template>
-  <v-container>
-    <PhotosGrid :photos="getPhotos"
-                :fetching-photos="getIsFetchingPhotos"
-                :fetching-photo-details="getIsFetchingPhotoDetails"
-                @load-more-photos="fetchThumbnailPhotos()"
-                @load-photo-detail="fetchPhotoDetail($event)">
-    </PhotosGrid>
-  </v-container>
+  <PhotosGrid :photos="getPhotos"
+              :fetching-photos="getIsFetchingPhotos"
+              :fetching-photo-details="getIsFetchingPhotoDetails"
+              @load-more-photos="fetchThumbnailPhotos()"
+              @load-photo-detail="fetchPhotoDetail($event)">
+  </PhotosGrid>
 </template>
 
 <script>
@@ -41,7 +39,7 @@ export default {
 
       this.$store.dispatch('photos/fetchPhotos')
         .catch(() => {
-          this.$toast.error('An error has occurred while fetching the photos')
+          // this.$toast.error('An error has occurred while fetching the photos')
         })
     },
 
@@ -57,7 +55,7 @@ export default {
 
       this.$store.dispatch('photos/fetchPhotoDetail', photoId)
         .catch(() => {
-          this.$toast.error('An error has occurred while fetching the photo detail')
+          // this.$toast.error('An error has occurred while fetching the photo detail')
         })
     }
   }

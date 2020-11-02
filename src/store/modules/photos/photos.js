@@ -25,8 +25,8 @@ const getters = {
     return state.photos.map(photo => {
       return {
         ...photo,
-        thumb: photo.cropped_picture,
-        src: photo.full_picture || photo.cropped_picture,
+        thumbnailPhoto: photo.cropped_picture,
+        fullPhoto: photo.full_picture || null,
         title: photo.author ? `By ${photo.author} ` : '',
         description: photo.camera && photo.tags ? `Camera model: ${photo.camera} | Hashtags: ${photo.tags || ''}` : ''
       }

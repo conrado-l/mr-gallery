@@ -1,0 +1,44 @@
+// Layout
+.d-flex {
+  display: flex;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+// Text
+.font-weight-600 {
+  font-weight: 600;
+}
+
+.font-color-white {
+  color: #ffffff;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+// Cursor
+.cursor-pointer {
+  cursor: pointer;
+}
+
