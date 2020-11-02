@@ -7,6 +7,7 @@
         <!-- Viewer container -->
         <div class="viewer-container">
           <div class="d-flex justify-content-center align-items-center w-100 h-100"
+               @click.self="onBackdropClick"
                @touchstart="handleTouchStart"
                @touchend="handleTouchEnd">
             <!-- Photo container -->
@@ -18,24 +19,29 @@
                    :src="getImageURLSource"
                    :key="getPhotoID"
                    draggable="false"
+                   :title="getPhotoHoverTooltip"
                    @load="onPhotoLoad()"
                    @click="zoomPhoto()"
-                   @mousemove="handleMouseMove($event)"
-                   @mousedown="handleMouseDown($event)"
-                   @mouseup="handleMouseUp($event)">
+                   @mousemove="handleMouseMove"
+                   @mousedown="handleMouseDown"
+                   @mouseup="handleMouseUp">
             </div>
           </div>
           <!-- Footer -->
           <div class="footer">
-            <!-- Title container -->
-            <div class="title-container text-align-center">
-              <span class="font-weight-600 font-color-white">{{getPhotoTitle}}</span>
-            </div>
+            <!-- Title -->
+            <transition name="fade">
+              <div v-show="getPhotoTitle" class="title-container text-align-center">
+                <span class="font-weight-600 font-color-white">{{getPhotoTitle}}</span>
+              </div>
+            </transition>
 
-            <!-- Description container -->
-            <div class="description-container text-align-center">
-              <span class=font-color-white>{{getPhotoDescription}}</span>
-            </div>
+            <!-- Description -->
+            <transition name="fade">
+              <div v-show="getPhotoDescription" class="description-container text-align-center">
+                <span class=font-color-white>{{getPhotoDescription}}</span>
+              </div>
+            </transition>
           </div>
         </div>
         <!-- Close button -->
@@ -47,32 +53,38 @@
                >
         </div>
         <!-- Share button -->
-        <div v-show="!isPhotoLoading"
-             class="share-button-container cursor-pointer"
-             title="Share photo URL"
-             @click="onPhotoURLShare()">
-          <img class="overlay-action-button"
-               src="../assets/images/icons/share.svg">
-        </div>
+        <transition name="fade">
+          <div v-show="!isPhotoLoading && !isZooming"
+               class="share-button-container cursor-pointer"
+               title="Share photo URL"
+               @click="onPhotoURLShare()">
+            <img class="overlay-action-button"
+                 src="../assets/images/icons/share.svg">
+          </div>
+        </transition>
 
         <!-- Navigation arrows -->
         <!-- Previous photo -->
-        <div v-show="!isFirstPhoto"
-            class="previous-button-container overlay-button-container navigation-button cursor-pointer"
-            @click="previousPhoto()"
-            title="Previous photo">
-          <img src="../assets/images/icons/left-arrow.svg"
-               class="overlay-action-button">
-        </div>
+        <transition name="fade">
+          <div v-show="!isFirstPhoto && !isZooming"
+              class="previous-button-container overlay-button navigation-button cursor-pointer"
+              @click="previousPhoto()"
+              title="Previous photo">
+            <img src="../assets/images/icons/left-arrow.svg"
+                 class="overlay-action-button">
+          </div>
+        </transition>
 
         <!-- Next photo -->
-        <div v-show="!isLastPhoto"
-            class="next-button-container overlay-button-container navigation-button cursor-pointer"
-            @click="nextPhoto()"
-            title="Next photo">
-          <img src="../assets/images/icons/right-arrow.svg"
-               class="overlay-action-button">
-        </div>
+        <transition name="fade">
+          <div v-show="!isLastPhoto && !isZooming"
+              class="next-button-container overlay-button navigation-button cursor-pointer"
+              @click="nextPhoto()"
+              title="Next photo">
+            <img src="../assets/images/icons/right-arrow.svg"
+                 class="overlay-action-button">
+          </div>
+        </transition>
       </div>
     </div>
   </transition>
@@ -216,6 +228,12 @@ export default {
      */
     isLastPhoto () {
       return this.currentPhotoIndex === this.photos.length - 1
+    },
+    /**
+     * Gets the photo hover title depending on the zoom status
+     */
+    getPhotoHoverTooltip () {
+      return `Click to zoom ${this.isZooming ? 'out' : 'in'}`
     }
   },
   methods: {
@@ -338,7 +356,7 @@ export default {
         this.canZoom = false
 
         const item = e.target.parentNode
-        const newZoom = 1.8
+        const newZoom = 2
         item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + newZoom + ', ' + newZoom + ', ' + newZoom + ')'
       }
       e.stopPropagation()
@@ -428,7 +446,6 @@ export default {
       const item = this.$refs.photoContainer
 
       const isZooming = this.isZooming
-      const thisContext = this
 
       if (isZooming) {
         if (!this.isDraging) {
@@ -439,10 +456,7 @@ export default {
       }
 
       if (this.isZooming) {
-        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(1.8, 1.8, 1.8)'
-        setTimeout(function () {
-          thisContext.transition = 'all .0s ease'
-        }, 100)
+        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(2, 2, 2)'
       } else {
         this.resetZoom()
       }
@@ -454,7 +468,6 @@ export default {
       this.left = 0
       this.top = 0
       this.isZooming = false
-      this.swipeType = null
 
       if (this.currentPhotoIndex != null) {
         const item = this.$refs.photoContainer
@@ -494,8 +507,8 @@ export default {
         this.closeViewer()
       }
     },
-    /** Shares the full photo URL
-     * Closes the viewer when the backdrop is clicked
+    /**
+     * Shares the full photo URL
      */
     onPhotoURLShare () {
       if (!this.isPhotoLoading) {
@@ -586,7 +599,7 @@ export default {
 .photo {
   max-width: 100%;
   max-height: 100%;
-  margin: auto;
+  will-change: transform;
 }
 
 .overlay-action-button {
@@ -615,15 +628,7 @@ export default {
   padding: 20px;
 }
 
-.title-container {
-  bottom: 5vh;
-}
-
-.description-container {
-  bottom: 3vh;
-}
-
-.overlay-button-container {
+.overlay-button {
   z-index: 4;
 }
 
@@ -648,9 +653,14 @@ export default {
   opacity: 0;
 }
 
+// Responsive queries
 @media only screen and (max-width: $sm) {
   .navigation-button {
     display: none;
+  }
+
+  .photo {
+    max-width: 100vw;
   }
 }
 
