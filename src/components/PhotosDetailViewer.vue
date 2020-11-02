@@ -61,8 +61,7 @@
         </div>
         <!-- Share button -->
         <transition name="fade">
-          <div v-show="!isZooming"
-               class="share-button-container cursor-pointer"
+          <div class="share-button-container cursor-pointer"
                title="Share photo URL"
                data-test="share-url-button"
                @click="onPhotoURLShare()">
@@ -477,6 +476,11 @@ export default {
         return false
       }
 
+      // Disable for mobile, since it already supports it natively (pinch)
+      if (window.innerWidth <= 576) {
+        return
+      }
+
       const item = this.$refs.photoContainer
 
       const isZooming = this.isZooming
@@ -636,7 +640,6 @@ export default {
   max-width: 100%;
   transform: translate3d(calc(-50% + 0px), calc(-50% + 0px), 0px) scale3d(1, 1, 1);
   cursor: pointer;
-  box-shadow: 0 0 1.5rem rgba(0, 0, 0, .45);
   z-index: 5;
 
   &.zooming {
@@ -651,6 +654,7 @@ export default {
 .photo {
   max-width: 100%;
   max-height: 100%;
+  box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.45);
   will-change: transform;
 }
 
