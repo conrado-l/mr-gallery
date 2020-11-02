@@ -16,6 +16,11 @@ npm run serve
 ```
 The app will be listening on port `8080` (https://localhost:8080), if it's not being used.
 
+### Run unit tests (22 total)
+```
+npm run test:unit
+```
+
 ### Compiles and minifies for production
 ```
 npm run build
