@@ -309,7 +309,7 @@ export default {
      * Navigates to the next photo
      */
     nextPhoto () {
-      if (this.fetchingPhotos) {
+      if (this.fetchingPhotos || this.isPhotoLoading) {
         return
       }
 
@@ -327,6 +327,10 @@ export default {
      * Navigates to the previous photo
      */
     previousPhoto () {
+      if (this.fetchingPhotos || this.isPhotoLoading) {
+        return
+      }
+
       const newCurrentPhotoIndex = this.currentPhotoIndex - 1
 
       // Check if the new photo is valid
