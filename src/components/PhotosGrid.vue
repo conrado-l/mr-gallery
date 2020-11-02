@@ -3,8 +3,12 @@
     <PhotosDetailViewer
       :photos="photos"
       :current-photo-index="currentOpenedPhotoIndex"
-      thumbnailField="thumbnailPhoto"
-      fullPhotoField="fullPhoto"
+      :zoom-level="2"
+      :backdrop-close="true"
+      thumbnail-field="thumbnailPhoto"
+      full-photo-field="fullPhoto"
+      title-field="title"
+      description-field="description"
       @close="onViewerClose()"
       @photo-changed="onPhotoDetailChange($event)">
     </PhotosDetailViewer>

@@ -6,13 +6,13 @@
       <div class="outer-container">
         <!-- Viewer container -->
         <div class="viewer-container">
-          <div class="d-flex justify-content-center align-items-center w-100 h-100"
+          <div class="d-flex-center w-100 h-100"
                @click.self="onBackdropClick"
                @touchstart="handleTouchStart"
                @touchend="handleTouchEnd">
             <!-- Photo container -->
             <div class="photo-container"
-                 :class="{zoom: isZooming, loading: isPhotoLoading }"
+                 :class="{zooming: isZooming, loading: isPhotoLoading }"
                  ref="photoContainer">
               <!-- Photo -->
               <img class="photo"
@@ -25,6 +25,8 @@
                    @mousemove="handleMouseMove"
                    @mousedown="handleMouseDown"
                    @mouseup="handleMouseUp">
+              <Spinner v-show="isPhotoLoading"
+                       class="photo-spinner"></Spinner>
             </div>
           </div>
           <!-- Footer -->
@@ -91,11 +93,16 @@
 </template>
 
 <script>
+
+// Components
+import Spinner from '@/components/Spinner'
+
 // Utils
 import { copyTextToClipboard } from '@/utils/utils'
 
 export default {
   name: 'PhotosDetailViewer',
+  components: { Spinner },
   data: () => ({
     // Visibility
     visible: false,
@@ -152,6 +159,12 @@ export default {
       required: false,
       default: 'description'
     },
+    /** Zoom magnification level **/
+    zoomLevel: {
+      type: Number,
+      required: false,
+      default: 2
+    },
     /** Close the viewer if the backdrop is clicked **/
     backdropClose: {
       type: Boolean,
@@ -178,7 +191,7 @@ export default {
           return thumbnailSrc
         } else {
           // Placeholder fallback if the full photo and thumbnail failed
-          return 'https://demofree.sirv.com/nope-not-here.jpg'
+          return require('@/assets/images/image-not-found.webp')
         }
       }
     },
@@ -259,9 +272,15 @@ export default {
         return
       }
 
-      this.isPhotoLoading = true
+      const newCurrentPhotoIndex = this.currentPhotoIndex + 1
+
+      // Avoid showing the spinner when the next photo is already loaded
+      if (!this.isPhotoAlreadyLoaded(newCurrentPhotoIndex)) {
+        this.isPhotoLoading = true
+      }
+
       this.resetZoom()
-      this.$emit('photo-changed', this.currentPhotoIndex + 1)
+      this.$emit('photo-changed', newCurrentPhotoIndex)
     },
     /**
      * Navigates to the previous photo
@@ -271,7 +290,11 @@ export default {
 
       // Check if the new photo is valid
       if (newCurrentPhotoIndex >= 0) {
-        this.isPhotoLoading = true
+        // Avoid showing the spinner when the previous photo is already loaded
+        if (!this.isPhotoAlreadyLoaded(newCurrentPhotoIndex)) {
+          this.isPhotoLoading = true
+        }
+
         this.resetZoom()
         this.$emit('photo-changed', newCurrentPhotoIndex)
       }
@@ -355,8 +378,7 @@ export default {
         this.canZoom = false
 
         const item = e.target.parentNode
-        const newZoom = 2
-        item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + newZoom + ', ' + newZoom + ', ' + newZoom + ')'
+        item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + this.zoomLevel + ', ' + this.zoomLevel + ', ' + this.zoomLevel + ')'
       }
       e.stopPropagation()
     },
@@ -412,6 +434,9 @@ export default {
      * Handles the swiping end event for navigation
      */
     handleTouchEnd (e) {
+      if (this.isZooming) {
+        return
+      }
       const diffX = e.changedTouches[0].screenX - this.startSwipeX
       const diffY = e.changedTouches[0].screenY - this.startSwipeY
       const ratioX = Math.abs(diffX / diffY)
@@ -455,7 +480,7 @@ export default {
       }
 
       if (this.isZooming) {
-        item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(2, 2, 2)'
+        item.style.transform = `translate3d(calc(-50%), calc(-50%), 0px) scale3d(${this.zoomLevel}, ${this.zoomLevel}, ${this.zoomLevel})`
       } else {
         this.resetZoom()
       }
@@ -494,9 +519,22 @@ export default {
     },
     /**
      * Checks if the full size photo is currently set as source
-    */
+     * @return {boolean}
+     */
     isFullPhotoURLSet () {
       return !!this.getPhotoFullSizeURL
+    },
+    /**
+     * Checks if a photo was already laoded
+     * @param {number} photoIndex
+     * @return {boolean}
+     */
+    isPhotoAlreadyLoaded (photoIndex) {
+      if (photoIndex > this.photos.length - 1) {
+        return false
+      }
+
+      return this.photos[photoIndex].detailLoaded
     },
     /**
      * Closes the viewer when the backdrop is clicked
@@ -512,7 +550,7 @@ export default {
     onPhotoURLShare () {
       if (!this.isPhotoLoading) {
         copyTextToClipboard(this.getImageURLSource)
-        this.$toast.default('The photo URL was copied to the clipboard')
+        this.$toast.default('The photo\'s URL was copied to the clipboard')
       }
     }
   },
@@ -587,7 +625,7 @@ export default {
   box-shadow: 0 0 1.5rem rgba(0, 0, 0, .45);
   z-index: 5;
 
-  &.zoom {
+  &.zooming {
     cursor: move;
   }
 
@@ -643,6 +681,17 @@ export default {
 
 .next-button-container {
   right: 30px;
+}
+
+.photo-spinner {
+  position: absolute;
+  // TODO: improve alignment method, don't use "magic numbers" for top and left
+  top: 46%;
+  left: 47%;
+
+  //position: absolute;
+  //top: calc(50% - (32px / 2));
+  //left: calc(50% - (32px / 2));
 }
 
 // Animations

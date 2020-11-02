@@ -28,7 +28,8 @@ const getters = {
         thumbnailPhoto: photo.cropped_picture,
         fullPhoto: photo.full_picture || null,
         title: photo.author ? `By ${photo.author} ` : '',
-        description: photo.camera && photo.tags ? `Camera model: ${photo.camera} | Hashtags: ${photo.tags || ''}` : ''
+        description: photo.camera && photo.tags ? `Camera model: ${photo.camera} | Hashtags: ${photo.tags || ''}` : '',
+        detailLoaded: photo.detailLoaded || false
       }
     })
   },
@@ -109,7 +110,7 @@ const mutations = {
     state.photos = state.photos.map(photo => {
       // Update the photo with the actual details
       if (photo.id === photoDetails.id) {
-        return photoDetails
+        return { ...photoDetails, detailLoaded: true }
       } else {
         return photo
       }
