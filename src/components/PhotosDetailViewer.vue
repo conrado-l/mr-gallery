@@ -6,7 +6,9 @@
       <div class="outer-container">
         <!-- Viewer container -->
         <div class="viewer-container">
-          <div class="d-flex justify-content-center align-items-center w-100 h-100">
+          <div class="d-flex justify-content-center align-items-center w-100 h-100"
+               @touchstart="handleTouchStart"
+               @touchend="handleTouchEnd">
             <!-- Photo container -->
             <div class="photo-container"
                  :class="{zoom: isZooming, loading: isPhotoLoading }"
@@ -56,7 +58,7 @@
         <!-- Navigation arrows -->
         <!-- Previous photo -->
         <div v-show="!isFirstPhoto"
-            class="previous-button-container overlay-button-container navigation-button cursor-pointer "
+            class="previous-button-container overlay-button-container navigation-button cursor-pointer"
             @click="previousPhoto()"
             title="Previous photo">
           <img src="../assets/images/icons/left-arrow.svg"
@@ -83,22 +85,26 @@ import { copyTextToClipboard } from '@/utils/utils'
 export default {
   name: 'PhotosDetailViewer',
   data: () => ({
+    // Visibility
     visible: false,
+    // Status
     isPhotoLoading: true,
     isZooming: false,
     isDragging: false,
     isSwipping: false,
-    isDraggingSwipe: false,
-    swipeType: null,
+    // Mouse zoom and panning
+    canZoom: true,
     top: 0,
     left: 0,
     lastX: 0,
     lastY: 0,
-    canZoom: true,
     initialMouseX: 0,
     initialMouseY: 0,
     endMouseX: 0,
-    endMouseY: 0
+    endMouseY: 0,
+    // Touch navigation
+    startSwipeX: 0,
+    startSwipeY: 0
   }),
   props: {
     /** Contains the photos to be displayed **/
@@ -378,16 +384,44 @@ export default {
 
       return button === 0
     },
+    /**
+     * Handles the swiping start event for navigation
+     */
+    handleTouchStart (e) {
+      this.startSwipeX = e.changedTouches[0].screenX
+      this.startSwipeY = e.changedTouches[0].screenY
+    },
+    /**
+     * Handles the swiping end event for navigation
+     */
+    handleTouchEnd (e) {
+      const diffX = e.changedTouches[0].screenX - this.startSwipeX
+      const diffY = e.changedTouches[0].screenY - this.startSwipeY
+      const ratioX = Math.abs(diffX / diffY)
+      const ratioY = Math.abs(diffY / diffX)
+      const absDiff = Math.abs(ratioX > ratioY ? diffX : diffY)
 
+      // Ignore small movements
+      if (absDiff < 30) {
+        return
+      }
+
+      // Right / left swipes
+      if (ratioX > ratioY) {
+        if (diffX >= 0) {
+          // Right swipe
+          this.nextPhoto()
+        } else {
+          // Left swipe
+          this.previousPhoto()
+        }
+      }
+    },
     /**
      * Zooms on the photo
      */
     zoomPhoto () {
       if (!this.canZoom) {
-        return false
-      }
-
-      if (this.isSwipping) {
         return false
       }
 
@@ -403,6 +437,7 @@ export default {
       } else {
         this.isZooming = true
       }
+
       if (this.isZooming) {
         item.style.transform = 'translate3d(calc(-50%), calc(-50%), 0px) scale3d(1.8, 1.8, 1.8)'
         setTimeout(function () {
@@ -504,6 +539,7 @@ export default {
 <style lang="scss" scoped>
 
 @import "../assets/styles/helpers";
+@import "../assets/styles/breakpoints";
 
 .overlay {
   position: fixed;
@@ -532,13 +568,14 @@ export default {
   position: absolute;
   left: 50%;
   top: 50%;
+  max-width: 100%;
   transform: translate3d(calc(-50% + 0px), calc(-50% + 0px), 0px) scale3d(1, 1, 1);
-  cursor: zoom-in;
+  cursor: pointer;
   box-shadow: 0 0 1.5rem rgba(0, 0, 0, .45);
   z-index: 5;
 
-  &.zoomed {
-    cursor: zoom-out;
+  &.zoom {
+    cursor: move;
   }
 
   &.loading {
@@ -609,6 +646,12 @@ export default {
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+@media only screen and (max-width: $sm) {
+  .navigation-button {
+    display: none;
+  }
 }
 
 </style>

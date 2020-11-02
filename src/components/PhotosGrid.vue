@@ -9,8 +9,7 @@
       @photo-changed="onPhotoDetailChange($event)">
     </PhotosDetailViewer>
     <!-- Infinity scroll -->
-    <div v-infinite-scroll="onInfiniteScrollLoadMore"
-         :infinite-scroll-distance="5">
+    <div v-infinite-scroll="onInfiniteScrollLoadMore">
       <!-- Thumbnail photos -->
       <div class="grid-container">
         <CardPhoto
