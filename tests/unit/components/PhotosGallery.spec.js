@@ -9,7 +9,6 @@ import PhotosGallery from '@/views/PhotosGallery'
 
 describe('PhotosGallery.vue', () => {
   const localVue = createLocalVue()
-  let vuetify
 
   let store
 
@@ -24,7 +23,6 @@ describe('PhotosGallery.vue', () => {
   }
 
   beforeEach(() => {
-
     store = new Store({
       state: {
         photos: {

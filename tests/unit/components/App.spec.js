@@ -9,7 +9,6 @@ import App from '@/App'
 
 describe('App.vue', () => {
   const localVue = createLocalVue()
-  let vuetify
 
   let store
 
@@ -28,7 +27,6 @@ describe('App.vue', () => {
   }
 
   beforeEach(() => {
-
     store = new Store({
       state: {
         auth: {
