@@ -10,8 +10,9 @@
           <div class="d-flex-center w-100 h-100"
                data-test="overlay-backdrop"
                @click.self="onBackdropClick"
-               @touchstart="handleTouchStart"
-               @touchend="handleTouchEnd">
+               @touchstart="startSwipe"
+               @touchmove="continueSwipe"
+               @touchend="endSwipe">
             <!-- Photo container -->
             <div class="photo-container"
                  :class="{zooming: isZooming, loading: isPhotoLoading }"
@@ -26,6 +27,9 @@
                    :title="getPhotoHoverTooltip"
                    @load="onPhotoLoad()"
                    @click="zoomPhoto()"
+                   @touchstart="handleMouseDown($event)"
+                   @touchmove="handleMouseMove($event)"
+                   @touchend="handleMouseUp($event)"
                    @mousemove="handleMouseMove"
                    @mousedown="handleMouseDown"
                    @mouseup="handleMouseUp">
@@ -119,6 +123,8 @@ export default {
     isZooming: false,
     isDragging: false,
     isSwipping: false,
+    isDraggingSwipe: false,
+    swipeType: null,
     // Mouse zoom and panning
     canZoom: true,
     top: 0,
@@ -379,13 +385,18 @@ export default {
       }
 
       if (this.isDraging) {
+        // X-Y diffs
         this.top = this.top - this.lastY + e.clientY
         this.left = this.left - this.lastX + e.clientX
         this.lastX = e.clientX
         this.lastY = e.clientY
+
+        // Disable zooming for avoiding bugs
         this.canZoom = false
 
         const item = e.target.parentNode
+
+        // Panning with the current zoom level
         item.style.transform = 'translate3d(calc(-50% + ' + this.left + 'px), calc(-50% + ' + this.top + 'px), 0px) scale3d(' + this.zoomLevel + ', ' + this.zoomLevel + ', ' + this.zoomLevel + ')'
       }
       e.stopPropagation()
@@ -416,9 +427,8 @@ export default {
       this.lastX = 0
       this.lastY = 0
 
-      const thisContext = this
-      setTimeout(function () {
-        thisContext.canZoom = true
+      setTimeout(() => {
+        this.canZoom = true
       }, 100)
     },
     /**
@@ -433,40 +443,119 @@ export default {
       return button === 0
     },
     /**
-     * Handles the swiping start event for navigation
+     * Handles the start swiping event for navigation
      */
-    handleTouchStart (e) {
-      this.startSwipeX = e.changedTouches[0].screenX
-      this.startSwipeY = e.changedTouches[0].screenY
+    startSwipe (e) {
+      if (this.isZooming) {
+        return false
+      }
+
+      // Starts swiping
+      this.isDraggingSwipe = true
+      this.initialMouseX = this.getMouseXPosFromEvent(e)
+      this.initialMouseY = this.getMouseYPosFromEvent(e)
     },
     /**
-     * Handles the swiping end event for navigation
+     * Handles the "continue" swiping event for navigation
      */
-    handleTouchEnd (e) {
-      if (this.isZooming) {
-        return
-      }
-      const diffX = e.changedTouches[0].screenX - this.startSwipeX
-      const diffY = e.changedTouches[0].screenY - this.startSwipeY
-      const ratioX = Math.abs(diffX / diffY)
-      const ratioY = Math.abs(diffY / diffX)
-      const absDiff = Math.abs(ratioX > ratioY ? diffX : diffY)
+    continueSwipe (e) {
+      if (this.isDraggingSwipe) {
+        this.isSwipping = true
+        const currentPosX = this.getMouseXPosFromEvent(e)
+        const currentPosY = this.getMouseYPosFromEvent(e)
 
-      // Ignore small movements
-      if (absDiff < 30) {
-        return
-      }
+        // X-Y diffs
+        const diffX = Math.abs(currentPosX - this.initialMouseX)
+        const diffY = Math.abs(currentPosY - this.initialMouseY)
 
-      // Right / left swipes
-      if (ratioX > ratioY) {
-        if (diffX >= 0) {
-          // Right swipe
-          this.previousPhoto()
-        } else {
-          // Left swipe
-          this.nextPhoto()
+        // Swipe orientation
+        if (this.swipeType == null) {
+          if (diffY > 5 || diffX > 5) {
+            if (diffY > diffX) {
+              this.swipeType = 'v'
+            } else {
+              this.swipeType = 'h'
+            }
+          }
+        }
+
+        // Mobile case
+        if (e.type === 'touchmove') {
+          this.endMouseX = this.getMouseXPosFromEvent(e)
+          this.endMouseY = this.getMouseYPosFromEvent(e)
         }
       }
+    },
+    /**
+     * Handles the end swiping event for navigation
+     */
+    endSwipe (e) {
+      const swipeType = this.swipeType
+      this.isDraggingSwipe = false
+
+      // Horizontal swipe type
+      if (this.initialMouseX === 0 && swipeType === 'h') {
+        return false
+      }
+
+      // Touch end fixes
+      if (e.type !== 'touchend') {
+        this.endMouseX = this.getMouseXPosFromEvent(e)
+        this.endMouseY = this.getMouseYPosFromEvent(e)
+      } else {
+        if (this.endMouseX === 0) {
+          return
+        }
+      }
+
+      // Check if is dragged
+      if (
+        ((this.endMouseX - this.initialMouseX === 0) && swipeType === 'h') ||
+        this.isZooming ||
+        ((this.endMouseY - this.initialMouseY === 0) && swipeType === 'v')
+      ) {
+        return
+      }
+
+      // Reset swipe
+      setTimeout(() => {
+        this.isSwipping = false
+        this.initialMouseX = 0
+        this.endMouseX = 0
+      }, 10)
+
+      // Swipe orientation
+      if (this.swipeType === 'h') {
+        // Right swipe
+        if ((this.endMouseX - this.initialMouseX) < -40) {
+          return this.nextPhoto()
+        }
+        // Left swipe
+        if ((this.endMouseX - this.initialMouseX) > 40) {
+          return this.previousPhoto()
+        }
+      }
+
+      this.swipeType = null
+    },
+    /**
+     * Gets the X position from the event (mouse/touch)
+     */
+    getMouseXPosFromEvent (event) {
+      if (event.type.indexOf('mouse') !== -1) {
+        return event.clientX
+      }
+      return event.touches[0].clientX
+    },
+
+    /**
+     * Gets the Y position from the event (mouse/touch)
+     */
+    getMouseYPosFromEvent (event) {
+      if (event.type.indexOf('mouse') !== -1) {
+        return event.clientY
+      }
+      return event.touches[0].clientY
     },
     /**
      * Zooms on the photo
@@ -521,6 +610,8 @@ export default {
       this.visible = false
       this.resetZoom()
       this.isDragging = false
+      this.swipeType = null
+      this.isDraggingSwipe = false
       this.isPhotoLoading = true
     },
     /**
