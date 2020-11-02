@@ -53,7 +53,8 @@ describe('PhotosDetailViewer.vue', () => {
     const wrapper = factoryMount({
       ...defaultProps,
       photos,
-      currentPhotoIndex: 0
+      currentPhotoIndex: 0,
+      useThumbnail: true
     })
 
     // Wait for the next tick

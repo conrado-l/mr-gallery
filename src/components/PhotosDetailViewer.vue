@@ -309,7 +309,7 @@ export default {
      * Navigates to the next photo
      */
     nextPhoto () {
-      if (this.fetchingPhotos || this.isPhotoLoading) {
+      if (this.fetchingPhotos) {
         return
       }
 
@@ -327,7 +327,7 @@ export default {
      * Navigates to the previous photo
      */
     previousPhoto () {
-      if (this.fetchingPhotos || this.isPhotoLoading) {
+      if (this.fetchingPhotos) {
         return
       }
 
