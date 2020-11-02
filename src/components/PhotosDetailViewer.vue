@@ -699,13 +699,8 @@ export default {
 
 .photo-spinner {
   position: absolute;
-  // TODO: improve alignment method, don't use "magic numbers" for top and left
-  top: 46%;
-  left: 47%;
-
-  //position: absolute;
-  //top: calc(50% - (32px / 2));
-  //left: calc(50% - (32px / 2));
+  top: calc(50% - 16px); // Subtracting the spinner size / 2
+  left: calc(50% - 16px);// Subtracting the spinner size / 2
 }
 
 // Animations
